@@ -53,6 +53,14 @@
   width: 411px;
 }
 
+.marKDown .control-pane .header-format-buttons {
+  width: auto;
+  float: left;
+}
+
+.marKDown .control-pane .header-format-buttons .control-button {
+  float: left;
+}
 .marKDown .control-pane .header-buttons .control-button {
   float: right;
 }

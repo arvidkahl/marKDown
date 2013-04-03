@@ -1,13 +1,13 @@
 {
   "devMode": true,
-  "version": "0.3.1",
+  "version": "0.0.1",
   "name": "marKDown",
   "identifier": "com.koding.apps.marKDown",
   "path": "~/Applications/marKDown.kdapp",
   "homepage": "arvidkahl.koding.com/marKDown",
   "author": "Arvid Kahl",
-  "repository": "",
-  "description": "Kodepad : a Koding application that helps you to create another Koding Applications. Builds screens as you type.",
+  "repository": "git://github.com/arvidkahl/marKDown.git",
+  "description": "marKDown. Does markdown and stuff.",
   "category": "web-app",
   "source": {
     "blocks": {

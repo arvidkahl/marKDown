@@ -55,24 +55,24 @@ class Kodepad.Views.MainView extends JView
 
     # OVERFLOW FIX
     overflowFix = ->
-      #height = ($ ".kdview.kodepad").height() - 49
-      #($ ".kodepad-editors").height height
-      
+      height = ($ ".kdview.marKDown").height() - 49
+      ($ ".kodepad-editors").height height
+      #
     ($ window).on "resize", overflowFix
     # window.ace = [@ace, @cssAce]
     # SHOULD REPLACE WITH LEGAL RESIZE LISTENER
     do =>
       lastAceHeight = 0
       lastAceWidth = 0
-      #setInterval =>
-        #aceHeight = @aceView.getHeight()
-        #aceWidth = @aceView.getWidth()
-        #
-        #if aceHeight isnt lastAceHeight or aceWidth isnt lastAceWidth
-          #@ace.resize()
-          #lastAceHeight = @aceView.getHeight()
-          #lastAceWidth = @aceView.getWidth()
-      #, 20
+      setInterval =>
+        aceHeight = @aceView.getHeight()
+        aceWidth = @aceView.getWidth()
+        
+        if aceHeight isnt lastAceHeight or aceWidth isnt lastAceWidth
+          @ace.resize()
+          lastAceHeight = @aceView.getHeight()
+          lastAceWidth = @aceView.getWidth()
+      , 20
 
     @splitView = new KDSplitView
       cssClass  : "kodepad-editors"
@@ -101,201 +101,201 @@ class Kodepad.Views.MainView extends JView
     @controlButtons = new KDView
       cssClass    : 'header-buttons'
         
-    @controlButtons.addSubView new KDButtonViewWithMenu
-      cssClass        : 'clean-gray editor-button control-button save-as-kdapp'
-      title           : "Save"
-      menu            : =>
-        "Save as GitHub Gist...":
-          callback    : =>
-            
-            coffee    = @ace.getSession().getValue()
-            
-            new KDNotificationView 
-              title: "Kodepad is creating your Gist..."
-              
-            AppCreator.getSingleton().createGist coffee, '', (err, res)->
-              if err
-                new KDNotificationView 
-                  title: "An error occured while creating gist, try again."
-                  
-              modal = new KDModalView
-                overlay : yes
-                title     : "Your Gist is ready!"
-                content   : """
-                                <div class='modalformline'>
-                                  <p><b>#{res.html_url}</b></p>
-                                </div>
-                            """
-                buttons     :
-                  "Open Gist":
-                    cssClass: "modal-clean-green"
-                    callback: ->
-                      window.open res.html_url, "_blank"
-                      
-        "Load from GitHub Gist...":
-          callback: =>
-            modal = new KDModalViewWithForms
-              overlay : yes
-              title   : "Load from Gist URL"
-              content : """
-                <div class='modalformline'>
-                  <p>
-                    You can load a gist as an application and run it in Kodepad.
-                    The gist must contain <code>index.coffee</code> and <code>style.css</code> files.
-                  </p>
-                  <p>
-                      The gist code you are going to load can reach (and modify) all of your files, settings and 
-                      all other information you shared with Koding. If you don't know what you are doing, 
-                      it's <strong>not recommended</strong> to run external code on Kodepad.
-                  </p>
-                </div>
-              """
-              tabs                    :
-                navigable             : yes
-                forms                 :
-                  "Gist URL"          :
-                    fields            :
-                      url             :
-                        label         : "Gist URL: "
-                        name          : "url"
-                        placeholder   : "enter a gist url..."
-                        validate      :
-                          rules       :
-                            regExp    : /^https?:\/\/gist\.github\.com\//
-                          messages    :
-                            regExp    : "You must enter a real gist url."
-                    buttons           :
-                      "I know the risks, load and run":
-                        cssClass      : "modal-clean-gray"
-                        callback      : =>
-                          
-                          if not modal.modalTabs.forms["Gist URL"].inputs.url.validate()
-                            return
-                            
-                          url = modal.modalTabs.forms["Gist URL"].inputs.url.getValue()
-                          
-                          url = url.replace /^.*\/(\d+)$/g, 'https://api.github.com/gists/$1'
-                          
-                          notify = new KDNotificationView
-                            title : "Loading Gist..."
-                            
-                          kite = KD.getSingleton "kiteController"
-                          kite.run "curl -kL #{url}", (error, data) =>
-                            try data = JSON.parse data
-                            
-                            debugger
-                            
-                            if not error
-                              @ace.getSession().setValue data.files["index.coffee"].content
-                              
-                              notify.destroy()
-                              modal.destroy()
-                              notify = new KDNotificationView
-                                title : "Gist Loaded!"
-                            else
-                              notify = new KDNotificationView
-                                title : "Try again. :("
-                
-      
-      callback: =>
-        modal = new KDModalViewWithForms
-          title                     : "Save Application"
-          content                   : """
-              <div class='modalformline'>
-                <p>You can build an application using Kodepad. Please set your application up.</p>
-                <p>Don't forget to edit <code>.manifest</code> file in your application directory.</p>
-              </div>
-          """
-          overlay                   : yes
-          height                    : "auto"
-          tabs                      :
-            navigable               : yes
-            forms                   : 
-              "Settings": 
-                fields              : 
-                  name              :
-                    label           : "Name: "
-                    name            : "name"
-                    placeholder     : "name your application..."
-                    validate        :
-                      rules         :
-                        regExp      : /^[a-z\d]+([-][a-z\d]+)*$/i
-                      messages      :
-                        regExp      : "For Application name only lowercase letters and numbers are allowed!"
-                buttons             :
-                  "Save":
-                    cssClass        : "modal-clean-gray"
-                    callback        : =>
-                      
-                      if not modal.modalTabs.forms.Settings.inputs.name.validate()
-                        return
-                      
-                      name      = modal.modalTabs.forms.Settings.inputs.name.getValue()
-                      
-                      coffee    = @ace.getSession().getValue()
-                      
-                      notify = new KDNotificationView
-                        title : "Application #{name} is being created now..."
-                      
-                      AppCreator.getSingleton().create name, coffee, '', ->
-                        
-                        notify.destroy()
-                        modal.destroy()
-                        new KDNotificationView
-                          title : "Your application #{name} is ready! Have fun. :)"
+    #@controlButtons.addSubView new KDButtonViewWithMenu
+      #cssClass        : 'clean-gray editor-button control-button save-as-kdapp'
+      #title           : "Save"
+      #menu            : =>
+        #"Save as GitHub Gist...":
+          #callback    : =>
+            #
+            #coffee    = @ace.getSession().getValue()
+            #
+            #new KDNotificationView 
+              #title: "Kodepad is creating your Gist..."
+              #
+            #AppCreator.getSingleton().createGist coffee, '', (err, res)->
+              #if err
+                #new KDNotificationView 
+                  #title: "An error occured while creating gist, try again."
+                  #
+              #modal = new KDModalView
+                #overlay : yes
+                #title     : "Your Gist is ready!"
+                #content   : """
+                                #<div class='modalformline'>
+                                  #<p><b>#{res.html_url}</b></p>
+                                #</div>
+                            #"""
+                #buttons     :
+                  #"Open Gist":
+                    #cssClass: "modal-clean-green"
+                    #callback: ->
+                      #window.open res.html_url, "_blank"
+                      #
+        #"Load from GitHub Gist...":
+          #callback: =>
+            #modal = new KDModalViewWithForms
+              #overlay : yes
+              #title   : "Load from Gist URL"
+              #content : """
+                #<div class='modalformline'>
+                  #<p>
+                    #You can load a gist as an application and run it in Kodepad.
+                    #The gist must contain <code>index.coffee</code> and <code>style.css</code> files.
+                  #</p>
+                  #<p>
+                      #The gist code you are going to load can reach (and modify) all of your files, settings and 
+                      #all other information you shared with Koding. If you don't know what you are doing, 
+                      #it's <strong>not recommended</strong> to run external code on Kodepad.
+                  #</p>
+                #</div>
+              #"""
+              #tabs                    :
+                #navigable             : yes
+                #forms                 :
+                  #"Gist URL"          :
+                    #fields            :
+                      #url             :
+                        #label         : "Gist URL: "
+                        #name          : "url"
+                        #placeholder   : "enter a gist url..."
+                        #validate      :
+                          #rules       :
+                            #regExp    : /^https?:\/\/gist\.github\.com\//
+                          #messages    :
+                            #regExp    : "You must enter a real gist url."
+                    #buttons           :
+                      #"I know the risks, load and run":
+                        #cssClass      : "modal-clean-gray"
+                        #callback      : =>
+                          #
+                          #if not modal.modalTabs.forms["Gist URL"].inputs.url.validate()
+                            #return
+                            #
+                          #url = modal.modalTabs.forms["Gist URL"].inputs.url.getValue()
+                          #
+                          #url = url.replace /^.*\/(\d+)$/g, 'https://api.github.com/gists/$1'
+                          #
+                          #notify = new KDNotificationView
+                            #title : "Loading Gist..."
+                            #
+                          #kite = KD.getSingleton "kiteController"
+                          #kite.run "curl -kL #{url}", (error, data) =>
+                            #try data = JSON.parse data
+                            #
+                            #debugger
+                            #
+                            #if not error
+                              #@ace.getSession().setValue data.files["index.coffee"].content
+                              #
+                              #notify.destroy()
+                              #modal.destroy()
+                              #notify = new KDNotificationView
+                                #title : "Gist Loaded!"
+                            #else
+                              #notify = new KDNotificationView
+                                #title : "Try again. :("
+                #
+      #
+      #callback: =>
+        #modal = new KDModalViewWithForms
+          #title                     : "Save Application"
+          #content                   : """
+              #<div class='modalformline'>
+                #<p>You can build an application using Kodepad. Please set your application up.</p>
+                #<p>Don't forget to edit <code>.manifest</code> file in your application directory.</p>
+              #</div>
+          #"""
+          #overlay                   : yes
+          #height                    : "auto"
+          #tabs                      :
+            #navigable               : yes
+            #forms                   : 
+              #"Settings": 
+                #fields              : 
+                  #name              :
+                    #label           : "Name: "
+                    #name            : "name"
+                    #placeholder     : "name your application..."
+                    #validate        :
+                      #rules         :
+                        #regExp      : /^[a-z\d]+([-][a-z\d]+)*$/i
+                      #messages      :
+                        #regExp      : "For Application name only lowercase letters and numbers are allowed!"
+                #buttons             :
+                  #"Save":
+                    #cssClass        : "modal-clean-gray"
+                    #callback        : =>
+                      #
+                      #if not modal.modalTabs.forms.Settings.inputs.name.validate()
+                        #return
+                      #
+                      #name      = modal.modalTabs.forms.Settings.inputs.name.getValue()
+                      #
+                      #coffee    = @ace.getSession().getValue()
+                      #
+                      #notify = new KDNotificationView
+                        #title : "Application #{name} is being created now..."
+                      #
+                      #AppCreator.getSingleton().create name, coffee, '', ->
+                        #
+                        #notify.destroy()
+                        #modal.destroy()
+                        #new KDNotificationView
+                          #title : "Your application #{name} is ready! Have fun. :)"
     
-    @controlButtons.addSubView new KDButtonView
-      cssClass    : 'clean-gray editor-button control-button full-preview'
-      title       : ""
-      icon        : yes
-      iconOnly    : yes
-      iconClass   : "preview"
-      callback    : =>
-        @splitView.state = !@splitView.state
-        if @splitView.state
-          @splitView.resizePanel()
-          KD.utils.wait 500, =>
-            @editor.getView().domElement.trigger "keyup"
-        else
-          ($ window).trigger "resize"
+    #@controlButtons.addSubView new KDButtonView
+      #cssClass    : 'clean-gray editor-button control-button full-preview'
+      #title       : ""
+      #icon        : yes
+      #iconOnly    : yes
+      #iconClass   : "preview"
+      #callback    : =>
+        #@splitView.state = !@splitView.state
+        #if @splitView.state
+          #@splitView.resizePanel()
+          #KD.utils.wait 500, =>
+            #@editor.getView().domElement.trigger "keyup"
+        #else
+          #($ window).trigger "resize"
           
-    toggleTransparency = new KDToggleButton
-      style       : "kdwhitebtn"
-      cssClass    : "clean-gray editor-button control-button transp"
-      states      : [
-        "Transparent", (callback)=>
-          @preview.domElement.addClass 'transparented'
-          toggleTransparency.domElement.addClass 'transparented'
-          do callback
-        "Opaque", (callback)=>
-          @preview.domElement.removeClass 'transparented'
-          toggleTransparency.domElement.removeClass 'transparented'
-          do callback
-      ]   
-
-    @controlButtons.addSubView toggleTransparency
-    
-    runApp = (appName)-> 
-      appController = KD.getSingleton "kodingAppsController"
-      appManifest = appController.constructor.manifests[appName]
-      if appManifest
-        appController.runApp appManifest
-        return true
-      else
-        return false
-    
-    @controlButtons.addSubView new KDButtonView
-      cssClass    : "clean-gray editor-button control-button"
-      title       : ""
-      icon        : yes
-      iconOnly    : yes
-      iconClass   : "docs"
-      callback: =>
-        docsApp = runApp "Koding Docs"
-        if not docsApp 
-          new KDNotificationView
-            title: "Koding Docs is not installed!"
-            content: "This button is a shortcut to run Koding Docs, so you must install it."
+    #toggleTransparency = new KDToggleButton
+      #style       : "kdwhitebtn"
+      #cssClass    : "clean-gray editor-button control-button transp"
+      #states      : [
+        #"Transparent", (callback)=>
+          #@preview.domElement.addClass 'transparented'
+          #toggleTransparency.domElement.addClass 'transparented'
+          #do callback
+        #"Opaque", (callback)=>
+          #@preview.domElement.removeClass 'transparented'
+          #toggleTransparency.domElement.removeClass 'transparented'
+          #do callback
+      #]   
+#
+    #@controlButtons.addSubView toggleTransparency
+    #
+    #runApp = (appName)-> 
+      #appController = KD.getSingleton "kodingAppsController"
+      #appManifest = appController.constructor.manifests[appName]
+      #if appManifest
+        #appController.runApp appManifest
+        #return true
+      #else
+        #return false
+    #
+    #@controlButtons.addSubView new KDButtonView
+      #cssClass    : "clean-gray editor-button control-button"
+      #title       : ""
+      #icon        : yes
+      #iconOnly    : yes
+      #iconClass   : "docs"
+      #callback: =>
+        #docsApp = runApp "Koding Docs"
+        #if not docsApp 
+          #new KDNotificationView
+            #title: "Koding Docs is not installed!"
+            #content: "This button is a shortcut to run Koding Docs, so you must install it."
               
     @controlButtons.addSubView new KDMultipleChoice
       cssClass    : "clean-gray editor-button control-button auto-manual"
@@ -306,6 +306,34 @@ class Kodepad.Views.MainView extends JView
         if state is "Auto"
           @liveViewer.previewCode do @editor.getValue
     
+    @formatButtons = new KDView
+      cssClass    : 'header-format-buttons'
+    
+    @formatButtons.addSubView new KDButtonView
+      cssClass    : "clean-gray editor-button control-button bold"
+      title       : "B"
+      icon        : yes
+      iconOnly    : yes
+      iconClass   : "docs"
+      callback: =>   console.log 'BOLD!'  
+      
+    @formatButtons.addSubView new KDButtonView
+      cssClass    : "clean-gray editor-button control-button italic"
+      title       : "I"
+      icon        : yes
+      iconOnly    : yes
+      iconClass   : "docs"
+      callback: =>   console.log 'ITALIC!'
+         
+    @formatButtons.addSubView new KDButtonView
+      cssClass    : "clean-gray editor-button control-button underline"
+      title       : "_"
+      icon        : yes
+      iconOnly    : yes
+      iconClass   : "docs"
+      callback: =>   console.log 'UNDERLINE!'
+      
+    @controlView.addSubView @formatButtons
     @controlView.addSubView @exampleCode.options.label
     @controlView.addSubView @exampleCode
     @controlView.addSubView @controlButtons

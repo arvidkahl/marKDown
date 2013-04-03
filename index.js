@@ -1,4 +1,4 @@
-// Compiled by Koding Servers at Wed Apr 03 2013 01:15:16 GMT-0700 (PDT) in server time
+// Compiled by Koding Servers at Wed Apr 03 2013 14:53:34 GMT-0700 (PDT) in server time
 
 (function() {
 
@@ -327,7 +327,7 @@ Kodepad.Views.MainView = (function(_super) {
   }
 
   MainView.prototype.delegateElements = function() {
-    var item, key, overflowFix, runApp, toggleTransparency,
+    var item, key, overflowFix,
       _this = this;
     this.preview = new KDView({
       cssClass: "preview-pane"
@@ -345,12 +345,26 @@ Kodepad.Views.MainView = (function(_super) {
     });
     this.editorSplitView = new KDView;
     this.editorSplitView.addSubView(this.aceView);
-    overflowFix = function() {};
+    overflowFix = function() {
+      var height;
+      height = ($(".kdview.marKDown")).height() - 49;
+      return ($(".kodepad-editors")).height(height);
+    };
     ($(window)).on("resize", overflowFix);
     (function() {
       var lastAceHeight, lastAceWidth;
       lastAceHeight = 0;
-      return lastAceWidth = 0;
+      lastAceWidth = 0;
+      return setInterval(function() {
+        var aceHeight, aceWidth;
+        aceHeight = _this.aceView.getHeight();
+        aceWidth = _this.aceView.getWidth();
+        if (aceHeight !== lastAceHeight || aceWidth !== lastAceWidth) {
+          _this.ace.resize();
+          lastAceHeight = _this.aceView.getHeight();
+          return lastAceWidth = _this.aceView.getWidth();
+        }
+      }, 20);
     })();
     this.splitView = new KDSplitView({
       cssClass: "kodepad-editors",
@@ -391,227 +405,6 @@ Kodepad.Views.MainView = (function(_super) {
     this.controlButtons = new KDView({
       cssClass: 'header-buttons'
     });
-    this.controlButtons.addSubView(new KDButtonViewWithMenu({
-      cssClass: 'clean-gray editor-button control-button save-as-kdapp',
-      title: "Save",
-      menu: function() {
-        return {
-          "Save as GitHub Gist...": {
-            callback: function() {
-              var coffee;
-              coffee = _this.ace.getSession().getValue();
-              new KDNotificationView({
-                title: "Kodepad is creating your Gist..."
-              });
-              return AppCreator.getSingleton().createGist(coffee, '', function(err, res) {
-                var modal;
-                if (err) {
-                  new KDNotificationView({
-                    title: "An error occured while creating gist, try again."
-                  });
-                }
-                return modal = new KDModalView({
-                  overlay: true,
-                  title: "Your Gist is ready!",
-                  content: "<div class='modalformline'>\n  <p><b>" + res.html_url + "</b></p>\n</div>",
-                  buttons: {
-                    "Open Gist": {
-                      cssClass: "modal-clean-green",
-                      callback: function() {
-                        return window.open(res.html_url, "_blank");
-                      }
-                    }
-                  }
-                });
-              });
-            }
-          },
-          "Load from GitHub Gist...": {
-            callback: function() {
-              var modal;
-              return modal = new KDModalViewWithForms({
-                overlay: true,
-                title: "Load from Gist URL",
-                content: "<div class='modalformline'>\n  <p>\n    You can load a gist as an application and run it in Kodepad.\n    The gist must contain <code>index.coffee</code> and <code>style.css</code> files.\n  </p>\n  <p>\n      The gist code you are going to load can reach (and modify) all of your files, settings and \n      all other information you shared with Koding. If you don't know what you are doing, \n      it's <strong>not recommended</strong> to run external code on Kodepad.\n  </p>\n</div>",
-                tabs: {
-                  navigable: true,
-                  forms: {
-                    "Gist URL": {
-                      fields: {
-                        url: {
-                          label: "Gist URL: ",
-                          name: "url",
-                          placeholder: "enter a gist url...",
-                          validate: {
-                            rules: {
-                              regExp: /^https?:\/\/gist\.github\.com\//
-                            },
-                            messages: {
-                              regExp: "You must enter a real gist url."
-                            }
-                          }
-                        }
-                      },
-                      buttons: {
-                        "I know the risks, load and run": {
-                          cssClass: "modal-clean-gray",
-                          callback: function() {
-                            var kite, notify, url;
-                            if (!modal.modalTabs.forms["Gist URL"].inputs.url.validate()) {
-                              return;
-                            }
-                            url = modal.modalTabs.forms["Gist URL"].inputs.url.getValue();
-                            url = url.replace(/^.*\/(\d+)$/g, 'https://api.github.com/gists/$1');
-                            notify = new KDNotificationView({
-                              title: "Loading Gist..."
-                            });
-                            kite = KD.getSingleton("kiteController");
-                            return kite.run("curl -kL " + url, function(error, data) {
-                              try {
-                                data = JSON.parse(data);
-                              } catch (_error) {}
-                              debugger;
-                              if (!error) {
-                                _this.ace.getSession().setValue(data.files["index.coffee"].content);
-                                notify.destroy();
-                                modal.destroy();
-                                return notify = new KDNotificationView({
-                                  title: "Gist Loaded!"
-                                });
-                              } else {
-                                return notify = new KDNotificationView({
-                                  title: "Try again. :("
-                                });
-                              }
-                            });
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              });
-            }
-          }
-        };
-      },
-      callback: function() {
-        var modal;
-        return modal = new KDModalViewWithForms({
-          title: "Save Application",
-          content: "<div class='modalformline'>\n  <p>You can build an application using Kodepad. Please set your application up.</p>\n  <p>Don't forget to edit <code>.manifest</code> file in your application directory.</p>\n</div>",
-          overlay: true,
-          height: "auto",
-          tabs: {
-            navigable: true,
-            forms: {
-              "Settings": {
-                fields: {
-                  name: {
-                    label: "Name: ",
-                    name: "name",
-                    placeholder: "name your application...",
-                    validate: {
-                      rules: {
-                        regExp: /^[a-z\d]+([-][a-z\d]+)*$/i
-                      },
-                      messages: {
-                        regExp: "For Application name only lowercase letters and numbers are allowed!"
-                      }
-                    }
-                  }
-                },
-                buttons: {
-                  "Save": {
-                    cssClass: "modal-clean-gray",
-                    callback: function() {
-                      var coffee, name, notify;
-                      if (!modal.modalTabs.forms.Settings.inputs.name.validate()) {
-                        return;
-                      }
-                      name = modal.modalTabs.forms.Settings.inputs.name.getValue();
-                      coffee = _this.ace.getSession().getValue();
-                      notify = new KDNotificationView({
-                        title: "Application " + name + " is being created now..."
-                      });
-                      return AppCreator.getSingleton().create(name, coffee, '', function() {
-                        notify.destroy();
-                        modal.destroy();
-                        return new KDNotificationView({
-                          title: "Your application " + name + " is ready! Have fun. :)"
-                        });
-                      });
-                    }
-                  }
-                }
-              }
-            }
-          }
-        });
-      }
-    }));
-    this.controlButtons.addSubView(new KDButtonView({
-      cssClass: 'clean-gray editor-button control-button full-preview',
-      title: "",
-      icon: true,
-      iconOnly: true,
-      iconClass: "preview",
-      callback: function() {
-        _this.splitView.state = !_this.splitView.state;
-        if (_this.splitView.state) {
-          _this.splitView.resizePanel();
-          return KD.utils.wait(500, function() {
-            return _this.editor.getView().domElement.trigger("keyup");
-          });
-        } else {
-          return ($(window)).trigger("resize");
-        }
-      }
-    }));
-    toggleTransparency = new KDToggleButton({
-      style: "kdwhitebtn",
-      cssClass: "clean-gray editor-button control-button transp",
-      states: [
-        "Transparent", function(callback) {
-          _this.preview.domElement.addClass('transparented');
-          toggleTransparency.domElement.addClass('transparented');
-          return callback();
-        }, "Opaque", function(callback) {
-          _this.preview.domElement.removeClass('transparented');
-          toggleTransparency.domElement.removeClass('transparented');
-          return callback();
-        }
-      ]
-    });
-    this.controlButtons.addSubView(toggleTransparency);
-    runApp = function(appName) {
-      var appController, appManifest;
-      appController = KD.getSingleton("kodingAppsController");
-      appManifest = appController.constructor.manifests[appName];
-      if (appManifest) {
-        appController.runApp(appManifest);
-        return true;
-      } else {
-        return false;
-      }
-    };
-    this.controlButtons.addSubView(new KDButtonView({
-      cssClass: "clean-gray editor-button control-button",
-      title: "",
-      icon: true,
-      iconOnly: true,
-      iconClass: "docs",
-      callback: function() {
-        var docsApp;
-        docsApp = runApp("Koding Docs");
-        if (!docsApp) {
-          return new KDNotificationView({
-            title: "Koding Docs is not installed!",
-            content: "This button is a shortcut to run Koding Docs, so you must install it."
-          });
-        }
-      }
-    }));
     this.controlButtons.addSubView(new KDMultipleChoice({
       cssClass: "clean-gray editor-button control-button auto-manual",
       labels: ["Auto", "Manual"],
@@ -623,6 +416,40 @@ Kodepad.Views.MainView = (function(_super) {
         }
       }
     }));
+    this.formatButtons = new KDView({
+      cssClass: 'header-format-buttons'
+    });
+    this.formatButtons.addSubView(new KDButtonView({
+      cssClass: "clean-gray editor-button control-button bold",
+      title: "B",
+      icon: true,
+      iconOnly: true,
+      iconClass: "docs",
+      callback: function() {
+        return console.log('BOLD!');
+      }
+    }));
+    this.formatButtons.addSubView(new KDButtonView({
+      cssClass: "clean-gray editor-button control-button italic",
+      title: "I",
+      icon: true,
+      iconOnly: true,
+      iconClass: "docs",
+      callback: function() {
+        return console.log('ITALIC!');
+      }
+    }));
+    this.formatButtons.addSubView(new KDButtonView({
+      cssClass: "clean-gray editor-button control-button underline",
+      title: "_",
+      icon: true,
+      iconOnly: true,
+      iconClass: "docs",
+      callback: function() {
+        return console.log('UNDERLINE!');
+      }
+    }));
+    this.controlView.addSubView(this.formatButtons);
     this.controlView.addSubView(this.exampleCode.options.label);
     this.controlView.addSubView(this.exampleCode);
     this.controlView.addSubView(this.controlButtons);
