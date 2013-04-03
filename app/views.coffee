@@ -37,28 +37,19 @@ class Kodepad.Views.MainView extends JView
     @liveViewer.setPreviewView @preview
     
     @editor = new Editor
-      defaultValue: Settings.exampleCodes[0].coffee
+      defaultValue: Settings.exampleCodes[0].markdown
       callback: =>
         @liveViewer.previewCode do @editor.getValue
     @editor.getView().hide()
         
     @aceView = new KDView
       cssClass: 'editor code-editor'
-    
-    @cssEditor = new Editor
-      defaultValue: Settings.exampleCodes[0].css
-      callback: =>
-        @liveViewer.previewCSS do @cssEditor.getValue
-    @cssEditor.getView().hide()
         
-    @aceCSSView = new KDView
-      cssClass: 'editor css-editor'
-
     @editorSplitView = new KDSplitView
       type      : "horizontal"
       resizable : yes
-      sizes     : ["65%", "35%"]
-      views     : [@aceView, @aceCSSView]
+      sizes     : ["100%"]
+      views     : [@aceView]
 
     # OVERFLOW FIX
     overflowFix = ->
@@ -77,7 +68,6 @@ class Kodepad.Views.MainView extends JView
         
         if aceHeight isnt lastAceHeight or aceWidth isnt lastAceWidth
           @ace.resize()
-          @cssAce.resize()
           lastAceHeight = @aceView.getHeight()
           lastAceWidth = @aceView.getWidth()
       , 20
@@ -102,10 +92,9 @@ class Kodepad.Views.MainView extends JView
       selectOptions: ({title: item.title, value: key} for item, key in Kodepad.Settings.exampleCodes)
       callback: =>
         @lastSelectedItem = @exampleCode.getValue()
-        {coffee, css} = Kodepad.Settings.exampleCodes[@lastSelectedItem]
+        {markdown} = Kodepad.Settings.exampleCodes[@lastSelectedItem]
         
-        @ace.getSession().setValue coffee
-        @cssAce.getSession().setValue css
+        @ace.getSession().setValue markdown
     
     @controlButtons = new KDView
       cssClass    : 'header-buttons'
@@ -118,12 +107,11 @@ class Kodepad.Views.MainView extends JView
           callback    : =>
             
             coffee    = @ace.getSession().getValue()
-            css       = @cssAce.getSession().getValue()
             
             new KDNotificationView 
               title: "Kodepad is creating your Gist..."
               
-            AppCreator.getSingleton().createGist coffee, css, (err, res)->
+            AppCreator.getSingleton().createGist coffee, '', (err, res)->
               if err
                 new KDNotificationView 
                   title: "An error occured while creating gist, try again."
@@ -197,7 +185,6 @@ class Kodepad.Views.MainView extends JView
                             
                             if not error
                               @ace.getSession().setValue data.files["index.coffee"].content
-                              @cssAce.getSession().setValue data.files["style.css"].content
                               
                               notify.destroy()
                               modal.destroy()
@@ -244,12 +231,11 @@ class Kodepad.Views.MainView extends JView
                       name      = modal.modalTabs.forms.Settings.inputs.name.getValue()
                       
                       coffee    = @ace.getSession().getValue()
-                      css       = @cssAce.getSession().getValue()
                       
                       notify = new KDNotificationView
                         title : "Application #{name} is being created now..."
                       
-                      AppCreator.getSingleton().create name, coffee, css, ->
+                      AppCreator.getSingleton().create name, coffee, '', ->
                         
                         notify.destroy()
                         modal.destroy()
@@ -316,7 +302,6 @@ class Kodepad.Views.MainView extends JView
       callback    : (state)=>
         @liveViewer.active = if state is "Auto" then yes else no
         if state is "Auto"
-          @liveViewer.previewCSS do @cssEditor.getValue
           @liveViewer.previewCode do @editor.getValue
     
     @controlView.addSubView @exampleCode.options.label
@@ -327,13 +312,11 @@ class Kodepad.Views.MainView extends JView
     @liveViewer.setMainView @
     
     @liveViewer.previewCode do @editor.getValue
-    @liveViewer.previewCSS do @cssEditor.getValue
   
   pistachio: -> 
     """
     {{> @controlView}}
     {{> @editor.getView()}}
-    {{> @cssEditor.getView()}}
     {{> @splitView}}
     """
   buildAce: ->
@@ -361,29 +344,6 @@ class Kodepad.Views.MainView extends JView
         exec    : => 
           @editor.setValue @ace.getSession().getValue()
       
-    try
-      
-      cssUpdate = KD.utils.throttle =>
-        @cssEditor.setValue @cssAce.getSession().getValue()
-        @cssEditor.getView().domElement.trigger "keyup"
-      , Settings.aceThrottle
-      
-      @cssAce = ace.edit @aceCSSView.domElement.get 0
-      @cssAce.setTheme Settings.theme
-      @cssAce.getSession().setMode "ace/mode/css"
-      @cssAce.getSession().setTabSize 2
-      @cssAce.getSession().setUseSoftTabs true
-      @cssAce.getSession().setValue @cssEditor.getValue()
-      @cssAce.getSession().on "change", -> do cssUpdate
-      @cssEditor.setValue @cssAce.getSession().getValue()
-      @cssAce.commands.addCommand
-        name    : 'save'
-        bindKey :
-          win   : 'Ctrl-S'
-          mac   : 'Command-S'
-        exec    : => 
-          @cssEditor.setValue @cssAce.getSession().getValue()
-  
   viewAppended:->
     @delegateElements()
     @setTemplate do @pistachio

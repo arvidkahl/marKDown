@@ -1,4 +1,4 @@
-// Compiled by Koding Servers at Tue Apr 02 2013 18:07:07 GMT-0700 (PDT) in server time
+// Compiled by Koding Servers at Tue Apr 02 2013 18:21:41 GMT-0700 (PDT) in server time
 
 (function() {
 
@@ -35,53 +35,7 @@ Kodepad.Settings.exampleCodes = [];
 
 Kodepad.Settings.exampleCodes.push({
   title: "Sample",
-  coffee: "\n# Your awesome Koding App Code\n\n{nickname} = KD.whoami().profile\n\nclass MainView extends JView\n  constructor:->\n    super\n    @header = new KDHeaderView\n      type: \"big\"\n      title: \"Welcome to Kodepad!\"\n\n    @name = new KDInputView\n      placeholder: \"Your name\"\n\n    @button = new KDButtonView\n      title: \"Say hello!\"\n      callback: =>\n        name = @name.getValue() or nickname\n        @_notify?.destroy()\n        @_notify = new KDNotificationView\n          title: \"Hello, \#{name}!\"\n\n  pistachio:->\n    \"\"\"\n    {{> @header}}\n    Just change something from the left pane.\n    <br><br>\n    <strong>And try some interactions!:</strong>\n    {{> @name}}\n    {{> @button}}\n    \"\"\"\n  viewAppended: ->\n    @setTemplate do @pistachio\n\nappView.addSubView new MainView\n  cssClass: \"my-koding-app\"",
-  css: "\n/* Your awesome Koding App CSS Code */\n\n.my-koding-app {\n  margin: 10px;\n  padding: 0 10px 10px;\n  width: auto;\n  height: auto;\n  background-color: rgba(255,255,255,0.9);\n  border-radius: 3px;\n}\n\n.my-koding-app input {\n  margin: 20px 0;\n  background-color: #ccc !important;\n}"
-});
-
-/*
-# Blank Code Example
-*/
-
-
-Kodepad.Settings.exampleCodes.push({
-  title: "Pure Blank",
-  coffee: "",
-  css: ""
-});
-
-/*
-# Blank Application Code Example
-*/
-
-
-Kodepad.Settings.exampleCodes.push({
-  title: "Blank Application Template",
-  coffee: "{nickname} = KD.whoami().profile\n\nclass MainView extends JView\n  constructor:->\n    super\n    @header = new KDHeaderView\n      type: \"big\"\n      title: \"This is the header, \#{nickname}!\"\n\n    # Your app code here,\n    # nickname variable is the username of the app user.\n\n  pistachio:->\n    \"\"\"\n    {{> @header}}\n    \"\"\"\n  viewAppended: ->\n    @setTemplate do @pistachio\n\nappView.addSubView new MainView\n  cssClass: \"your-app-name\"",
-  css: ".your-app-name {\n  /* Your app CSS */\n}"
-});
-
-Kodepad.Settings.exampleCodes.push({
-  title: "Bouncing Ball",
-  coffee: "# A bouncing ball example by Gokmen Goksel\n# @gokmen - http://gokmen.koding.com\n\nclass MainView extends JView\n\n  constructor:->\n    super\n \n    @ball = new KDView\n      cssClass : 'ball'\n \n    @_width   = 400\n    @_height  = 300\n \n    @.$().css width : @_width\n    @.$().css height: @_height\n \n    @_x = @x = @_y = @y = 1\n \n    @updateBallPosition()\n \n  updateBallPosition:->\n \n    @x += @_x\n    @y += @_y\n \n    @_x = -1 if @x >= @_width - 50\n    @_x =  1 if @x == 0\n \n    @_y = -1 if @y >= @_height - 50\n    @_y =  1 if @y == 0\n \n    @ball.$().css top: @y\n    @ball.$().css left:@x\n \n    setTimeout =>\n      @updateBallPosition()\n    , 5\n \n  pistachio:->\n    \"\"\"\n    {{> @ball}}\n    \"\"\"\n \nappView.addSubView new MainView\n  cssClass: \"bounce\"",
-  css: ".bounce {\n  border: 1px solid orange;\n  margin: 10px;\n}\n\n.bounce .ball {\n  width: 50px;\n  height: 50px;\n  border-radius: 50px;\n  background-color: red;\n}"
-});
-
-/*
-# Kite Example
-*/
-
-
-Kodepad.Settings.exampleCodes.push({
-  title: "The Terminal: Kite Example",
-  coffee: "{nickname} = KD.whoami().profile\n\nclass MainView extends JView\n  constructor:->\n    super\n    @header = new KDHeaderView\n      type: \"big\"\n      title: \"The Terminal: Kite Example\"\n      \n    @_console = new KDView\n      tagName: 'pre'\n      partial: \"Run some code \#{nickname}!\"\n      \n    @command = new KDInputView\n      cssClass    : 'command'\n      placeholder : 'Write your command'\n      defaultValue: \"ls -la /Users/\#{nickname}/Applications\"\n      \n    @commandButton = new KDButtonView\n      title       : \"Run\"\n      callback    : =>\n        kite = KD.getSingleton(\"kiteController\")\n        kite.run @command.getValue(), (err, response)=>\n          @_console.$().text (err and err.message) or response\n          \n  pistachio:->\n    \"\"\"\n    {{> @header}}\n    {{> @command}}\n    {{> @commandButton}}\n    {{> @_console}}\n    \"\"\"\n  viewAppended: ->\n    @setTemplate do @pistachio\n    \nappView.addSubView new MainView\n  cssClass: \"console\"",
-  css: ".console {\n  overflow-y: scroll;\n  padding: 0 10px;\n}\n\n.console pre {\n  height: auto;\n  margin: 0;\n}\n\n.console input {\n  float: left;\n  margin: 10px 0;\n}\n\n.console button {\n  float: left;\n  margin: 10px 10px;\n}"
-});
-
-Kodepad.Settings.exampleCodes.push({
-  title: "Sample.kdapp (Really.)",
-  coffee: "\n# WOW! This is inception!!!\n\n{KDView}                = KD.classes\n{KDSplitView}           = KD.classes\n{KDInputView}           = KD.classes\n{KDModalView}           = KD.classes\n{KDButtonView}          = KD.classes\n{KDHeaderView}          = KD.classes\n{KDOnOffSwitch}         = KD.classes\n{KDListItemView}        = KD.classes\n{KDNotificationView}    = KD.classes\n{KDListViewController}  = KD.classes\n{KDModalViewWithForms}  = KD.classes\n\nclass SampleApp extends KDView\n\n  viewAppended:->\n\n    super\n\n    # Add Documentation Toggle Button\n    docToggleButton = new KDOnOffSwitch\n      defaultValue  : on\n      title         : \"Show Documentation: \"\n      size          : \"tiny\"\n      cssClass      : \"test-switch\"\n      callback      : (state) ->\n        if state then bottomSplitView.show() else bottomSplitView.hide()\n\n    @addSubView docToggleButton\n\n    # Get User Information\n    {nickname} = KD.whoami().profile\n\n    # Add the Header\n    @addSubView @header = new KDHeaderView\n      type     : \"big\"\n      title    : \"Welcome to your sample application <strong>\#{nickname}</strong> made with KDFramework !\"\n\n    informationView = new KDView\n      cssClass   : \"information-box\"\n      partial    : \"\"\"\n          <p>This is a sample application that you can read the code and get started with. To see usage, go to <code>index.coffee</code>\n          just glance at it, you will know how this page is constructed, and you will be able to make cool stuff.</p><br/>\n\n          <p>We want to provide much better documentation about the capabilities of KDFramework very soon, it is what we made <strong>Koding</strong> with.\n          Basically every single frontend functionality you see on Koding, will be made available to you piece by piece.</p><br/>\n          <p>We will open source KDFramework and publish it to Github so that you can contribute to it, but at this stage\n          it's api is not to be relied upon, and everything can change.</p><br/>\n          \n          <p>Please bear with us, and use its basic functionalities, soon enough you will be able to make amazing realtime applications with it. Enjoy! :)</p>\n      \"\"\"\n\n    # Create Input Test\n    inputView = new KDInputView\n      cssClass      : \"test-input\"\n      placeholder   : \"Write something to create a notification...\"\n      validate      :\n        event       : \"keyup\"\n        rules       :\n          required  : yes\n        messages    :\n          required  : \"That's a very required field...\"\n\n    # Update button state based on Input validation\n    inputView.on \"ValidationError\",  -> testButton.disable()\n    inputView.on \"ValidationPassed\", -> testButton.enable()\n\n    # Create Test Button\n    testButton = new KDButtonView\n      cssClass   : \"clean-gray test-input\"\n      title      : \"Create a Notification\"\n      callback   : ->\n        new KDNotificationView\n          title : inputView.getValue()\n\n    # Disable the Button, we will enable it if validation passes on input\n    testButton.disable()\n\n    # Create a Split View for input and the button\n    inputExampleView  = new KDSplitView\n      type      : \"vertical\"\n      resizable : no\n      sizes     : [\"70%\", \"30%\"]\n      views     : [inputView, testButton]\n\n    buttonExampleView  = new KDView\n      cssClass   : \"button-area\"\n\n    # Create a Modal Test Button\n    modalButton = new KDButtonView\n      cssClass : \"clean-gray test-input\"\n      title    : \"Create a Modal\"\n      callback   : ->\n        modal = new KDModalView\n          title        : \"A Modal with a Title\"\n          content      : \"<div class='modalformline'>Do you want to continue?</div>\"\n          height       : \"auto\"\n          overlay      : yes\n          buttons      :\n            Continue   :\n              loader   :\n                color  : \"#ffffff\"\n                diameter : 16\n              style    : \"modal-clean-gray\"\n              callback : ->\n                new KDNotificationView\n                  title: \"Lets Continue...\"\n                modal.destroy()\n\n    buttonExampleView.addSubView modalButton\n\n    showError = ->\n      new KDNotificationView\n        title    : \"An error occured while running the command\"\n        type     : \"mini\"\n        cssClass : \"error\"\n        duration : 3000\n\n    kiteController = KD.getSingleton \"kiteController\"\n\n    kiteButton = new KDButtonView\n      cssClass   : \"clean-gray test-input\"\n      title      : \"Run a command on Server\"\n      callback   : ->\n        modal = new KDModalViewWithForms\n          title                   : \"Run a command on server-side\"\n          content                 : \"<div class='modalformline'>You can run any bash commands that you run from Terminal</div>\"\n          overlay                 : yes\n          width                   : 600\n          height                  : \"auto\"\n          tabs                    :\n            navigable             : yes\n            forms                 :\n              form                :\n                buttons           :\n                  Run             :\n                    cssClass      : \"modal-clean-gray\"\n                    loader        :\n                      color       : \"#444444\"\n                      diameter    : 12\n                    callback      : ->\n                      command = modal.modalTabs.forms.form.inputs.Command.getValue()\n                      \n                      setTimeout ->\n                        if modal.modalTabs.forms.form.buttons.Run.loader.active\n                          showError()\n                          modal.modalTabs.forms.form.buttons.Clear.getCallback()()\n                      , 8000\n                      \n                      kiteController.run command, (err, res)->\n                        showError() if err\n                        modal.modalTabs.forms.form.inputs.Output.setValue err or res\n                        modal.modalTabs.forms.form.buttons.Run.hideLoader()\n                  Clear           :\n                    cssClass      : \"modal-clean-gray\"\n                    callback      : ->\n                      modal.modalTabs.forms.form.inputs.Output.setValue ''\n                      modal.modalTabs.forms.form.buttons.Run.hideLoader()\n\n                fields            :\n                  Command         :\n                    label         : \"Command:\"\n                    name          : \"command\"\n                    defaultValue  : \"ls -la\"\n                    placeholder   : \"Command to run on Server-Side\"\n                    cssClass      : \"command-input\"\n                  Output          :\n                    label         : \"Output:\"\n                    type          : \"textarea\"\n                    name          : \"output\"\n                    placeholder   : \"The output of command will be here...\"\n                    cssClass      : \"output-screen\"\n\n    buttonExampleView.addSubView kiteButton\n\n    # Open A Koding App\n    openActivityButton = new KDButtonView\n      cssClass   : \"clean-gray test-input\"\n      title      : \"Open Activity Feed\"\n      callback   : ->\n        appManager.openApplication \"Activity\"\n\n    buttonExampleView.addSubView openActivityButton\n\n    # Create a Description View for Property List\n    descriptionView = new KDView\n      cssClass : \"description-view\"\n\n    # Add a Header for Property List\n    descriptionView.addSubView subHeader = new KDHeaderView\n      type     : \"medium\"\n      title    : \"Select a Class from left to see its properties here\"\n\n    # Create Class List Controller to control class data\n    classListController = new KDListViewController\n      viewOptions :\n        itemClass : ClassItemView\n    ,\n      items : ({name: item} for item of KD.classes)\n\n    # Create Class List Controller to control property data\n    propertyListController = new KDListViewController\n      viewOptions :\n        itemClass : PropertyItemView\n\n    # Get their views\n    classList = classListController.getView()\n    descriptionView.addSubView propertyListController.getView()\n\n    # Create a custom KDView and add header and the list on it\n    classView = new KDView\n    classView.addSubView new KDHeaderView\n      type     : \"medium\"\n      title    : \"List of Classes on KD Framework\"\n\n    # Follow showClassDetails event from classList\n    classListView = classListController.getListView()\n    classListView.on \"showClassDetails\", (className)->\n      subHeader.updateTitle className\n      obj = KD.classes[className].prototype\n\n      propertyListController.replaceAllItems (item for item of obj)\n\n    classView.addSubView classList\n\n    # Add the Header\n    examplesHeader = new KDHeaderView\n      type     : \"medium\"\n      title    : \"Examples\"\n\n    # Add documentation view to bottomSplitView\n    bottomSplitView = new KDSplitView\n      type      : \"vertical\"\n      cssClass  : \"class-model-panel\"\n      resizable : yes\n      sizes     : [\"50%\",null]\n      views     : [ classView, descriptionView ]\n\n    topRightSplitView = new KDSplitView\n      type      : \"horizontal\"\n      resizable : no\n      sizes     : [\"20%\", null ,null]\n      views     : [ examplesHeader, inputExampleView, buttonExampleView ]\n\n    topSplitView = new KDSplitView\n      type      : \"vertical\"\n      resizable : no\n      sizes     : [\"50%\",null]\n      views     : [ informationView, topRightSplitView ]\n\n    # Add all of the views to a split\n    mainSplitView = new KDSplitView\n      type      : \"horizontal\"\n      resizable : no\n      sizes     : [\"30%\", null]\n      views     : [ topSplitView, bottomSplitView ]\n\n    # And add that split to the mainView\n    @addSubView mainSplitView\n\nclass ClassItemView extends KDListItemView\n\n  constructor:(options, data)->\n    options.cssClass = \"class-item\"\n    super\n\n  partial:(data)-> \"<a href=#> » \#{data.name}</a>\"\n\n  click:->\n    listView = @getDelegate()\n    listView.emit \"showClassDetails\", @getData().name\n\nclass PropertyItemView extends ClassItemView\n\n  partial:(data)-> \"<a href=#> ► \#{data}</a>\"\n\n  click:->\n    new KDNotificationView\n      title: \"Documentation will be available soon\"\n\n# And let create our App\ndo ->\n  appInstance = new SampleApp\n\n  # appView is a constant that you can use as your app container\n  appView.addSubView appInstance\n",
-  css: ".class-model-panel {\n    border-top:1px solid #DDD;\n}\n\n.class-model-panel .kdsplitview-resizer {\n    width: 5px;\n}\n\n.class-item {\n    padding: 2px;\n    padding-left: 6px;\n}\n\n.class-item a {\n    text-decoration:none;\n}\n\n.test-input {\n    margin: 6px;\n    width: 98%;\n}\n\n.test-switch {\n    position: absolute;\n    right: 4px;\n    top: 4px;   \n    z-index:1000;\n}\n\n.test-button {\n    position: absolute;\n    right: 8px;   \n}\n\n.test-input-view {\n    background-color: lightgray;\n}\n\n.command-input, .output-screen {\n    font-family: monospace;\n}\n\n.output-screen {\n    min-height: 200px;\n}\n\n.button-area {\n    text-align: center;   \n}\n\n.information-box {\n    width: auto;\n    height: auto;\n    padding: 10px;\n    background-color: #EEE;\n    border: 1px solid #DDD;\n    border-radius: 4px;\n    margin: 4px;\n}"
+  markdown: "An h1 header\n============\n\nParagraphs are separated by a blank line.\n\n2nd paragraph. *Italic*, **bold**, `monospace`. Itemized lists\nlook like:\n\n  * this one\n  * that one\n  * the other one\n\nNote that --- not considering the asterisk --- the actual text\ncontent starts at 4-columns in.\n\n> Block quotes are\n> written like so.\n>\n> They can span multiple paragraphs,\n> if you like.\n\nUse 3 dashes for an em-dash. Use 2 dashes for ranges (ex. \"it's all in\nchapters 12--14\"). Three dots ... will be converted to an ellipsis.\n\n\n\nAn h2 header\n------------\n\nHere's a numbered list:\n\n 1. first item\n 2. second item\n 3. third item\n\nNote again how the actual text starts at 4 columns in (4 characters\nfrom the left side). Here's a code sample:\n\n    # Let me re-iterate ...\n    for i in 1 .. 10 { do-something(i) }\n\nAs you probably guessed, indented 4 spaces. By the way, instead of\nindenting the block, you can use delimited blocks, if you like:\n\n~~~\ndefine foobar() {\n    print \"Welcome to flavor country!\";\n}\n~~~\n\n(which makes copying & pasting easier). You can optionally mark the\ndelimited block for Pandoc to syntax highlight it:\n\n~~~python\nimport time\n# Quick, count to ten!\nfor i in range(10):\n    # (but not *too* quick)\n    time.sleep(0.5)\n    print i\n~~~\n\n\n\n### An h3 header ###\n\nNow a nested list:\n\n 1. First, get these ingredients:\n\n      * carrots\n      * celery\n      * lentils\n\n 2. Boil some water.\n\n 3. Dump everything in the pot and follow\n    this algorithm:\n\n        find wooden spoon\n        uncover pot\n        stir\n        cover pot\n        balance wooden spoon precariously on pot handle\n        wait 10 minutes\n        goto first step (or shut off burner when done)\n\n    Do not bump wooden spoon or it will fall.\n\nNotice again how text always lines up on 4-space indents (including\nthat last line which continues item 3 above). Here's a link to [a\nwebsite](http://foo.bar). Here's a link to a [local\ndoc](local-doc.html). Here's a footnote [^1].\n\n[^1]: Footnote text goes here.\n\nTables can look like this:\n\nsize  material      color\n----  ------------  ------------\n9     leather       brown\n10    hemp canvas   natural\n11    glass         transparent\n\nTable: Shoes, their sizes, and what they're made of\n\n(The above is the caption for the table.) Here's a definition list:\n\napples\n  : Good for making applesauce.\noranges\n  : Citrus!\ntomatoes\n  : There's no \"e\" in tomatoe.\n\nAgain, text is indented 4 spaces. (Alternately, put blank lines in\nbetween each of the above definition list lines to spread things\nout more.)\n\nInline math equations go in like so: $\omega = d\phi / dt$. Display\nmath should get its own line and be put in in double-dollarsigns:\n\n$$I = \int \rho R^{2} dV$$\n\nDone.\n"
 });
 
 
@@ -380,7 +334,7 @@ Kodepad.Views.MainView = (function(_super) {
     });
     this.liveViewer.setPreviewView(this.preview);
     this.editor = new Editor({
-      defaultValue: Settings.exampleCodes[0].coffee,
+      defaultValue: Settings.exampleCodes[0].markdown,
       callback: function() {
         return _this.liveViewer.previewCode(_this.editor.getValue());
       }
@@ -389,21 +343,11 @@ Kodepad.Views.MainView = (function(_super) {
     this.aceView = new KDView({
       cssClass: 'editor code-editor'
     });
-    this.cssEditor = new Editor({
-      defaultValue: Settings.exampleCodes[0].css,
-      callback: function() {
-        return _this.liveViewer.previewCSS(_this.cssEditor.getValue());
-      }
-    });
-    this.cssEditor.getView().hide();
-    this.aceCSSView = new KDView({
-      cssClass: 'editor css-editor'
-    });
     this.editorSplitView = new KDSplitView({
       type: "horizontal",
       resizable: true,
-      sizes: ["65%", "35%"],
-      views: [this.aceView, this.aceCSSView]
+      sizes: ["100%"],
+      views: [this.aceView]
     });
     overflowFix = function() {
       var height;
@@ -421,7 +365,6 @@ Kodepad.Views.MainView = (function(_super) {
         aceWidth = _this.aceView.getWidth();
         if (aceHeight !== lastAceHeight || aceWidth !== lastAceWidth) {
           _this.ace.resize();
-          _this.cssAce.resize();
           lastAceHeight = _this.aceView.getHeight();
           return lastAceWidth = _this.aceView.getWidth();
         }
@@ -457,11 +400,10 @@ Kodepad.Views.MainView = (function(_super) {
         return _results;
       })(),
       callback: function() {
-        var coffee, css, _ref1;
+        var markdown;
         _this.lastSelectedItem = _this.exampleCode.getValue();
-        _ref1 = Kodepad.Settings.exampleCodes[_this.lastSelectedItem], coffee = _ref1.coffee, css = _ref1.css;
-        _this.ace.getSession().setValue(coffee);
-        return _this.cssAce.getSession().setValue(css);
+        markdown = Kodepad.Settings.exampleCodes[_this.lastSelectedItem].markdown;
+        return _this.ace.getSession().setValue(markdown);
       }
     });
     this.controlButtons = new KDView({
@@ -474,13 +416,12 @@ Kodepad.Views.MainView = (function(_super) {
         return {
           "Save as GitHub Gist...": {
             callback: function() {
-              var coffee, css;
+              var coffee;
               coffee = _this.ace.getSession().getValue();
-              css = _this.cssAce.getSession().getValue();
               new KDNotificationView({
                 title: "Kodepad is creating your Gist..."
               });
-              return AppCreator.getSingleton().createGist(coffee, css, function(err, res) {
+              return AppCreator.getSingleton().createGist(coffee, '', function(err, res) {
                 var modal;
                 if (err) {
                   new KDNotificationView({
@@ -550,7 +491,6 @@ Kodepad.Views.MainView = (function(_super) {
                               debugger;
                               if (!error) {
                                 _this.ace.getSession().setValue(data.files["index.coffee"].content);
-                                _this.cssAce.getSession().setValue(data.files["style.css"].content);
                                 notify.destroy();
                                 modal.destroy();
                                 return notify = new KDNotificationView({
@@ -603,17 +543,16 @@ Kodepad.Views.MainView = (function(_super) {
                   "Save": {
                     cssClass: "modal-clean-gray",
                     callback: function() {
-                      var coffee, css, name, notify;
+                      var coffee, name, notify;
                       if (!modal.modalTabs.forms.Settings.inputs.name.validate()) {
                         return;
                       }
                       name = modal.modalTabs.forms.Settings.inputs.name.getValue();
                       coffee = _this.ace.getSession().getValue();
-                      css = _this.cssAce.getSession().getValue();
                       notify = new KDNotificationView({
                         title: "Application " + name + " is being created now..."
                       });
-                      return AppCreator.getSingleton().create(name, coffee, css, function() {
+                      return AppCreator.getSingleton().create(name, coffee, '', function() {
                         notify.destroy();
                         modal.destroy();
                         return new KDNotificationView({
@@ -698,7 +637,6 @@ Kodepad.Views.MainView = (function(_super) {
       callback: function(state) {
         _this.liveViewer.active = state === "Auto" ? true : false;
         if (state === "Auto") {
-          _this.liveViewer.previewCSS(_this.cssEditor.getValue());
           return _this.liveViewer.previewCode(_this.editor.getValue());
         }
       }
@@ -708,16 +646,15 @@ Kodepad.Views.MainView = (function(_super) {
     this.controlView.addSubView(this.controlButtons);
     this.liveViewer.setSplitView(this.splitView);
     this.liveViewer.setMainView(this);
-    this.liveViewer.previewCode(this.editor.getValue());
-    return this.liveViewer.previewCSS(this.cssEditor.getValue());
+    return this.liveViewer.previewCode(this.editor.getValue());
   };
 
   MainView.prototype.pistachio = function() {
-    return "{{> this.controlView}}\n{{> this.editor.getView()}}\n{{> this.cssEditor.getView()}}\n{{> this.splitView}}";
+    return "{{> this.controlView}}\n{{> this.editor.getView()}}\n{{> this.splitView}}";
   };
 
   MainView.prototype.buildAce = function() {
-    var ace, cssUpdate, update,
+    var ace, update,
       _this = this;
     ace = this.getOptions().ace;
     try {
@@ -735,7 +672,7 @@ Kodepad.Views.MainView = (function(_super) {
         return update();
       });
       this.editor.setValue(this.ace.getSession().getValue());
-      this.ace.commands.addCommand({
+      return this.ace.commands.addCommand({
         name: 'save',
         bindKey: {
           win: 'Ctrl-S',
@@ -743,32 +680,6 @@ Kodepad.Views.MainView = (function(_super) {
         },
         exec: function() {
           return _this.editor.setValue(_this.ace.getSession().getValue());
-        }
-      });
-    } catch (_error) {}
-    try {
-      cssUpdate = KD.utils.throttle(function() {
-        _this.cssEditor.setValue(_this.cssAce.getSession().getValue());
-        return _this.cssEditor.getView().domElement.trigger("keyup");
-      }, Settings.aceThrottle);
-      this.cssAce = ace.edit(this.aceCSSView.domElement.get(0));
-      this.cssAce.setTheme(Settings.theme);
-      this.cssAce.getSession().setMode("ace/mode/css");
-      this.cssAce.getSession().setTabSize(2);
-      this.cssAce.getSession().setUseSoftTabs(true);
-      this.cssAce.getSession().setValue(this.cssEditor.getValue());
-      this.cssAce.getSession().on("change", function() {
-        return cssUpdate();
-      });
-      this.cssEditor.setValue(this.cssAce.getSession().getValue());
-      return this.cssAce.commands.addCommand({
-        name: 'save',
-        bindKey: {
-          win: 'Ctrl-S',
-          mac: 'Command-S'
-        },
-        exec: function() {
-          return _this.cssEditor.setValue(_this.cssAce.getSession().getValue());
         }
       });
     } catch (_error) {}
