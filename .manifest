@@ -1,0 +1,39 @@
+{
+  "version": "0.3.1",
+  "name": "marKDown",
+  "identifier": "com.koding.apps.marKDown",
+  "path": "~/Applications/marKDown.kdapp",
+  "homepage": "arvidkahl.koding.com/marKDown",
+  "author": "Arvid Kahl",
+  "repository": "",
+  "description": "Kodepad : a Koding application that helps you to create another Koding Applications. Builds screens as you type.",
+  "category": "web-app",
+  "source": {
+    "blocks": {
+      "app": {
+        "files": [
+          "./app/settings.coffee",
+          "./app/core.coffee",
+          "./app/views.coffee",
+          "./index.coffee"
+        ]
+      }
+    },
+    "stylesheets": [
+      "./resources/style.css"
+    ]
+  },
+  "options": {
+    "type": "tab"
+  },
+  "icns": {
+    "128": "./resources/icon.128.png"
+  },
+  "screenshots": [
+    "./resources/screenshots/kodepad1.png",
+    "./resources/screenshots/kodepad2.png",
+    "./resources/screenshots/kodepad3.png",
+    "./resources/screenshots/kodepad4.png"
+  ],
+  "authorNick": "arvidkahl"
+}
