@@ -41,6 +41,18 @@
   background-position: 0 -630px;
 }
 
+.marKDown .control-pane .icon.bold {
+  background-position: 0 -20px;
+}
+
+.marKDown .control-pane .icon.italic {
+  background-position: 0 -40px;
+}
+
+.marKDown .control-pane .icon.underline {
+  background-position: 0 -60px;
+}
+
 .marKDown .control-pane .on-off .on {
   width: 90px;
 }
@@ -60,6 +72,7 @@
 
 .marKDown .control-pane .header-format-buttons .control-button {
   float: left;
+  margin: 6px 3px;
 }
 .marKDown .control-pane .header-buttons .control-button {
   float: right;
@@ -88,7 +101,7 @@
 
 .marKDown .control-pane .control-button.transp.transparented {
   background-image: none;
-  background-color: #fff;
+  background-color: white;
 }
 
 .marKDown .control-pane label {

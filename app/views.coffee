@@ -314,24 +314,49 @@ class Kodepad.Views.MainView extends JView
       title       : "B"
       icon        : yes
       iconOnly    : yes
-      iconClass   : "docs"
-      callback: =>   console.log 'BOLD!'  
-      
+      iconClass   : "bold"
+      callback: =>   
+        range = @ace.selection.getRange()
+        @ace.session.replace range, "**#{@ace.getCopyText()}**"
+        
+        @ace.selection.setSelectionRange
+          start : 
+              column : range.start.column+2
+              row    : range.start.row
+          end   : 
+              column : range.end.column+2
+              row    : range.end.row  
+        
+        @ace.focus()
+
     @formatButtons.addSubView new KDButtonView
       cssClass    : "clean-gray editor-button control-button italic"
       title       : "I"
       icon        : yes
       iconOnly    : yes
-      iconClass   : "docs"
-      callback: =>   console.log 'ITALIC!'
-         
-    @formatButtons.addSubView new KDButtonView
-      cssClass    : "clean-gray editor-button control-button underline"
-      title       : "_"
-      icon        : yes
-      iconOnly    : yes
-      iconClass   : "docs"
-      callback: =>   console.log 'UNDERLINE!'
+      iconClass   : "italic"
+      callback: =>   
+        range = @ace.selection.getRange()
+        
+        @ace.session.replace range, "*#{@ace.getCopyText()}*"
+
+        @ace.selection.setSelectionRange
+          start : 
+              column : range.start.column+1
+              row    : range.start.row
+          end   : 
+              column : range.end.column+1
+              row    : range.end.row
+              
+        @ace.focus()        
+        
+    #@formatButtons.addSubView new KDButtonView
+      #cssClass    : "clean-gray editor-button control-button underline"
+      #title       : "_"
+      #icon        : yes
+      #iconOnly    : yes
+      #iconClass   : "underline"
+      #callback: =>   console.log 'UNDERLINE!'
       
     @controlView.addSubView @formatButtons
     @controlView.addSubView @exampleCode.options.label

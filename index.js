@@ -1,4 +1,4 @@
-// Compiled by Koding Servers at Wed Apr 03 2013 14:53:34 GMT-0700 (PDT) in server time
+// Compiled by Koding Servers at Wed Apr 03 2013 16:23:42 GMT-0700 (PDT) in server time
 
 (function() {
 
@@ -424,9 +424,22 @@ Kodepad.Views.MainView = (function(_super) {
       title: "B",
       icon: true,
       iconOnly: true,
-      iconClass: "docs",
+      iconClass: "bold",
       callback: function() {
-        return console.log('BOLD!');
+        var range;
+        range = _this.ace.selection.getRange();
+        _this.ace.session.replace(range, "**" + (_this.ace.getCopyText()) + "**");
+        _this.ace.selection.setSelectionRange({
+          start: {
+            column: range.start.column + 2,
+            row: range.start.row
+          },
+          end: {
+            column: range.end.column + 2,
+            row: range.end.row
+          }
+        });
+        return _this.ace.focus();
       }
     }));
     this.formatButtons.addSubView(new KDButtonView({
@@ -434,19 +447,23 @@ Kodepad.Views.MainView = (function(_super) {
       title: "I",
       icon: true,
       iconOnly: true,
-      iconClass: "docs",
+      iconClass: "italic",
       callback: function() {
-        return console.log('ITALIC!');
-      }
-    }));
-    this.formatButtons.addSubView(new KDButtonView({
-      cssClass: "clean-gray editor-button control-button underline",
-      title: "_",
-      icon: true,
-      iconOnly: true,
-      iconClass: "docs",
-      callback: function() {
-        return console.log('UNDERLINE!');
+        var range;
+        range = _this.ace.selection.getRange();
+        _this.ace.session.replace(range, "*" + (_this.ace.getCopyText()) + "*");
+        console.log(range);
+        _this.ace.selection.setSelectionRange({
+          start: {
+            column: range.start.column + 1,
+            row: range.start.row
+          },
+          end: {
+            column: range.end.column + 1,
+            row: range.end.row
+          }
+        });
+        return _this.ace.focus();
       }
     }));
     this.controlView.addSubView(this.formatButtons);
