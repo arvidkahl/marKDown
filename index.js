@@ -1,4 +1,4 @@
-// Compiled by Koding Servers at Wed Apr 03 2013 16:23:42 GMT-0700 (PDT) in server time
+// Compiled by Koding Servers at Wed Apr 03 2013 16:27:06 GMT-0700 (PDT) in server time
 
 (function() {
 
@@ -452,7 +452,6 @@ Kodepad.Views.MainView = (function(_super) {
         var range;
         range = _this.ace.selection.getRange();
         _this.ace.session.replace(range, "*" + (_this.ace.getCopyText()) + "*");
-        console.log(range);
         _this.ace.selection.setSelectionRange({
           start: {
             column: range.start.column + 1,
@@ -539,7 +538,7 @@ MainView = Kodepad.Views.MainView;
     partial: "Loading marKDown..."
   });
   KD.enableLogs();
-  console.log('MEW');
+  console.log('Development version of marKDown starting...');
   markdownModal = new KDModalView({
     width: window.innerWidth - 100,
     height: window.innerHeight - 100,

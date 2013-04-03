@@ -12,7 +12,7 @@ do ->
       #cssClass: "marKDown"
       #ace: Ace
   KD.enableLogs()
-  console.log 'MEW'
+  console.log 'Development version of marKDown starting...'
   
   markdownModal = new KDModalView
     width : window.innerWidth-100
