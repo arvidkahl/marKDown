@@ -1,4 +1,5 @@
 {
+  "devMode": true,
   "version": "0.3.1",
   "name": "marKDown",
   "identifier": "com.koding.apps.marKDown",
@@ -24,10 +25,10 @@
     ]
   },
   "options": {
-    "type": "tab"
+    "_type": "tab"
   },
   "icns": {
-    "128": "./resources/icon.128.png"
+    "128": "./resources/icon.128.new.png"
   },
   "screenshots": [
     "./resources/screenshots/kodepad1.png",

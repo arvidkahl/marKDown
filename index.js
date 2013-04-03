@@ -1,4 +1,4 @@
-// Compiled by Koding Servers at Tue Apr 02 2013 18:21:41 GMT-0700 (PDT) in server time
+// Compiled by Koding Servers at Wed Apr 03 2013 01:15:16 GMT-0700 (PDT) in server time
 
 (function() {
 
@@ -343,32 +343,14 @@ Kodepad.Views.MainView = (function(_super) {
     this.aceView = new KDView({
       cssClass: 'editor code-editor'
     });
-    this.editorSplitView = new KDSplitView({
-      type: "horizontal",
-      resizable: true,
-      sizes: ["100%"],
-      views: [this.aceView]
-    });
-    overflowFix = function() {
-      var height;
-      height = ($(".kdview.kodepad")).height() - 49;
-      return ($(".kodepad-editors")).height(height);
-    };
+    this.editorSplitView = new KDView;
+    this.editorSplitView.addSubView(this.aceView);
+    overflowFix = function() {};
     ($(window)).on("resize", overflowFix);
     (function() {
       var lastAceHeight, lastAceWidth;
       lastAceHeight = 0;
-      lastAceWidth = 0;
-      return setInterval(function() {
-        var aceHeight, aceWidth;
-        aceHeight = _this.aceView.getHeight();
-        aceWidth = _this.aceView.getWidth();
-        if (aceHeight !== lastAceHeight || aceWidth !== lastAceWidth) {
-          _this.ace.resize();
-          lastAceHeight = _this.aceView.getHeight();
-          return lastAceWidth = _this.aceView.getWidth();
-        }
-      }, 20);
+      return lastAceWidth = 0;
     })();
     this.splitView = new KDSplitView({
       cssClass: "kodepad-editors",
@@ -707,18 +689,55 @@ var MainView;
 MainView = Kodepad.Views.MainView;
 
 (function() {
-  var loader;
+  var loader, markdownModal;
   loader = new KDView({
-    cssClass: "kodepad loading",
-    partial: "Loading Kodepad..."
+    cssClass: "marKDown loading",
+    partial: "Loading marKDown..."
   });
-  appView.addSubView(loader);
+  KD.enableLogs();
+  console.log('MEW');
+  markdownModal = new KDModalView({
+    width: window.innerWidth - 100,
+    height: window.innerHeight - 100,
+    overlay: false,
+    title: 'marKDown editor',
+    buttons: {
+      Yes: {
+        loader: {
+          color: "#ffffff",
+          diameter: 16
+        },
+        style: "modal-clean-gray",
+        callback: function() {
+          new KDNotificationView({
+            title: "Clicked yes!"
+          });
+          return markdownModal.destroy();
+        }
+      },
+      No: {
+        loader: {
+          color: "#ffffff",
+          diameter: 16
+        },
+        style: "modal-clean-gray",
+        callback: function() {
+          new KDNotificationView({
+            title: "Clicked no!"
+          });
+          return markdownModal.destroy();
+        }
+      }
+    }
+  });
+  markdownModal.addSubView(loader);
   return require(["ace/ace"], function(Ace) {
-    appView.removeSubView(loader);
-    return appView.addSubView(new MainView({
-      cssClass: "kodepad",
+    markdownModal.removeSubView(loader);
+    markdownModal.addSubView(new MainView({
+      cssClass: "marKDown",
       ace: Ace
     }));
+    return markdownModal.$('.kdmodal-content').height(window.innerHeight - 100);
   });
 })();
 

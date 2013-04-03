@@ -45,16 +45,18 @@ class Kodepad.Views.MainView extends JView
     @aceView = new KDView
       cssClass: 'editor code-editor'
         
-    @editorSplitView = new KDSplitView
-      type      : "horizontal"
-      resizable : yes
-      sizes     : ["100%"]
-      views     : [@aceView]
+    @editorSplitView = new KDView
+      #type      : "horizontal"
+      #resizable : yes
+      #sizes     : ["100%"]
+      #views     : [@aceView]
+
+    @editorSplitView.addSubView @aceView
 
     # OVERFLOW FIX
     overflowFix = ->
-      height = ($ ".kdview.kodepad").height() - 49
-      ($ ".kodepad-editors").height height
+      #height = ($ ".kdview.kodepad").height() - 49
+      #($ ".kodepad-editors").height height
       
     ($ window).on "resize", overflowFix
     # window.ace = [@ace, @cssAce]
@@ -62,15 +64,15 @@ class Kodepad.Views.MainView extends JView
     do =>
       lastAceHeight = 0
       lastAceWidth = 0
-      setInterval =>
-        aceHeight = @aceView.getHeight()
-        aceWidth = @aceView.getWidth()
-        
-        if aceHeight isnt lastAceHeight or aceWidth isnt lastAceWidth
-          @ace.resize()
-          lastAceHeight = @aceView.getHeight()
-          lastAceWidth = @aceView.getWidth()
-      , 20
+      #setInterval =>
+        #aceHeight = @aceView.getHeight()
+        #aceWidth = @aceView.getWidth()
+        #
+        #if aceHeight isnt lastAceHeight or aceWidth isnt lastAceWidth
+          #@ace.resize()
+          #lastAceHeight = @aceView.getHeight()
+          #lastAceWidth = @aceView.getWidth()
+      #, 20
 
     @splitView = new KDSplitView
       cssClass  : "kodepad-editors"
