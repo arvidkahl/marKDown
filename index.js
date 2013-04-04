@@ -1,4 +1,4 @@
-// Compiled by Koding Servers at Wed Apr 03 2013 16:27:06 GMT-0700 (PDT) in server time
+// Compiled by Koding Servers at Wed Apr 03 2013 17:18:42 GMT-0700 (PDT) in server time
 
 (function() {
 
@@ -84,6 +84,8 @@ Kodepad.Core.LiveViewer = (function() {
     this.sessionId = KD.utils.uniqueId("kodepadSession");
   }
 
+  LiveViewer.prototype.applyBold = function() {};
+
   LiveViewer.prototype.setPreviewView = function(previewView) {
     this.previewView = previewView;
   };
@@ -116,7 +118,6 @@ Kodepad.Core.LiveViewer = (function() {
         }
         if ((_ref2 = options.highlight) == null) {
           options.highlight = function(code, lang) {
-            window.console.log(hljs);
             try {
               return hljs.highlight(lang, code).value;
             } catch (e) {
@@ -324,6 +325,7 @@ Kodepad.Views.MainView = (function(_super) {
   function MainView() {
     MainView.__super__.constructor.apply(this, arguments);
     this.liveViewer = LiveViewer.getSingleton();
+    this.listenWindowResize();
   }
 
   MainView.prototype.delegateElements = function() {
@@ -343,8 +345,19 @@ Kodepad.Views.MainView = (function(_super) {
     this.aceView = new KDView({
       cssClass: 'editor code-editor'
     });
-    this.editorSplitView = new KDView;
-    this.editorSplitView.addSubView(this.aceView);
+    this.aceWrapperView = new KDView({
+      cssClass: 'ace-wrapper-view'
+    });
+    this.aceWrapperView.addSubView(this.aceView);
+    this.mdHelpView = new KDView({
+      cssClass: 'md-help-view'
+    });
+    this.editorSplitView = new KDSplitView({
+      type: "horizontal",
+      resizable: true,
+      sizes: ["90%", "10%"],
+      views: [this.aceWrapperView, this.mdHelpView]
+    });
     overflowFix = function() {
       var height;
       height = ($(".kdview.marKDown")).height() - 49;
@@ -471,7 +484,10 @@ Kodepad.Views.MainView = (function(_super) {
     this.controlView.addSubView(this.controlButtons);
     this.liveViewer.setSplitView(this.splitView);
     this.liveViewer.setMainView(this);
-    return this.liveViewer.previewCode(this.editor.getValue());
+    this.liveViewer.previewCode(this.editor.getValue());
+    return this.utils.defer(function() {
+      return ($(window)).resize();
+    });
   };
 
   MainView.prototype.pistachio = function() {
@@ -580,7 +596,7 @@ MainView = Kodepad.Views.MainView;
       cssClass: "marKDown",
       ace: Ace
     }));
-    return markdownModal.$('.kdmodal-content').height(window.innerHeight - 100);
+    return markdownModal.$('.kdmodal-content').height(window.innerHeight - 95);
   });
 })();
 

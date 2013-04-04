@@ -19,6 +19,8 @@ class Kodepad.Core.LiveViewer
   constructor: ()->
     @sessionId = KD.utils.uniqueId "kodepadSession"
   
+  applyBold: ->
+  
   setPreviewView: (@previewView)->
     
   setSplitView: (@splitView)->
@@ -36,8 +38,6 @@ class Kodepad.Core.LiveViewer
         options.gfm         ?= yes
         options.sanitize    ?= yes
         options.highlight   ?= (code, lang)->
-            window.console.log hljs
-            #hljs = require('highlight.js')
             try
                 hljs.highlight(lang, code).value
             catch e

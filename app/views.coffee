@@ -28,7 +28,8 @@ class Kodepad.Views.MainView extends JView
   constructor: ()->
     super
     @liveViewer = LiveViewer.getSingleton()
-
+    @listenWindowResize()
+    
   delegateElements:->
     
     @preview = new KDView
@@ -44,14 +45,23 @@ class Kodepad.Views.MainView extends JView
         
     @aceView = new KDView
       cssClass: 'editor code-editor'
-        
-    @editorSplitView = new KDView
-      #type      : "horizontal"
-      #resizable : yes
-      #sizes     : ["100%"]
-      #views     : [@aceView]
 
-    @editorSplitView.addSubView @aceView
+    @aceWrapperView = new KDView
+      cssClass : 'ace-wrapper-view'
+    
+    @aceWrapperView.addSubView @aceView
+
+    @mdHelpView = new KDView
+      cssClass : 'md-help-view'
+
+    @editorSplitView = new KDSplitView
+      type      : "horizontal"
+      resizable : yes
+      sizes     : ["90%","10%"]
+      views     : [@aceWrapperView,@mdHelpView]
+
+    
+    #@editorSplitView.addSubView @aceWrapperView
 
     # OVERFLOW FIX
     overflowFix = ->
@@ -367,7 +377,7 @@ class Kodepad.Views.MainView extends JView
     @liveViewer.setMainView @
     
     @liveViewer.previewCode do @editor.getValue
-  
+    @utils.defer => ($ window).resize()
   pistachio: -> 
     """
     {{> @controlView}}

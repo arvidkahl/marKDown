@@ -45,4 +45,4 @@ do ->
     markdownModal.addSubView new MainView
       cssClass: "marKDown"
       ace: Ace
-    markdownModal.$('.kdmodal-content').height window.innerHeight-100
+    markdownModal.$('.kdmodal-content').height window.innerHeight-95
