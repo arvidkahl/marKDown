@@ -192,4 +192,25 @@ class Kodepad.Core.AppCreator
         kite.run "curl -kL -A\"Koding\" -X POST https://api.github.com/gists --data @#{tmpFile}", (err, res)->
           callback err, JSON.parse(res)
           kite.run "rm -f #{tmpFile}"
+          
+class Kodepad.Views.HelpView extends JView
+
+    constructor:->
+        super
+        @text = new KDView
+          partial : 'I am a help view'
+        
+        @on 'bold', =>
+            @text.updatePartial 'Bold text uses ** text **'      
+        @on 'italic', =>
+            @text.updatePartial 'Italic text uses * text *'
+    
+    setDefault :->
+        #@text.updatePartial 'Help.'
+
+    pistachio:->
+        """
+        {{> @text }}
+        """
+
     

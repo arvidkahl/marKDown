@@ -124,4 +124,6 @@
   }
 .marKDown .md-help-view {
   background-color : #e8e8e8;
+  padding : 20px;
+  box-sizing:border-box;
 }

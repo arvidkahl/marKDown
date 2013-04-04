@@ -1,5 +1,5 @@
 {Settings, Ace}   = Kodepad
-{LiveViewer, AppCreator} = Kodepad.Core
+{LiveViewer, AppCreator, HelpView} = Kodepad.Core
 
 class Kodepad.Views.Editor
   constructor: (options)->
@@ -23,7 +23,7 @@ class Kodepad.Views.Editor
 
 class Kodepad.Views.MainView extends JView
 
-  {Editor} = Kodepad.Views
+  {Editor,HelpView} = Kodepad.Views
   
   constructor: ()->
     super
@@ -51,14 +51,14 @@ class Kodepad.Views.MainView extends JView
     
     @aceWrapperView.addSubView @aceView
 
-    @mdHelpView = new KDView
+    @mdHelpView = new HelpView
       cssClass : 'md-help-view'
 
     @editorSplitView = new KDSplitView
       type      : "horizontal"
       resizable : yes
-      sizes     : ["90%","10%"]
-      views     : [@aceWrapperView,@mdHelpView]
+      sizes     : ["10%","90%"]
+      views     : [@mdHelpView,@aceWrapperView]
 
     
     #@editorSplitView.addSubView @aceWrapperView
@@ -319,12 +319,13 @@ class Kodepad.Views.MainView extends JView
     @formatButtons = new KDView
       cssClass    : 'header-format-buttons'
     
-    @formatButtons.addSubView new KDButtonView
+    @formatButtons.addSubView boldButton = new KDButtonView
       cssClass    : "clean-gray editor-button control-button bold"
       title       : "B"
-      icon        : yes
-      iconOnly    : yes
-      iconClass   : "bold"
+      #icon        : yes
+      #iconOnly    : yes
+      #iconClass   : "bold"
+      bind        : 'mouseenter mouseleave'
       callback: =>   
         range = @ace.selection.getRange()
         @ace.session.replace range, "**#{@ace.getCopyText()}**"
@@ -338,13 +339,20 @@ class Kodepad.Views.MainView extends JView
               row    : range.end.row  
         
         @ace.focus()
+    
+    boldButton.on 'mouseenter', =>
+        @mdHelpView.emit 'bold'
+    
+    boldButton.on 'mouseleave', =>
+        @mdHelpView.setDefault()
 
-    @formatButtons.addSubView new KDButtonView
+    @formatButtons.addSubView italicButton = new KDButtonView
       cssClass    : "clean-gray editor-button control-button italic"
       title       : "I"
-      icon        : yes
-      iconOnly    : yes
-      iconClass   : "italic"
+      #icon        : yes
+      #iconOnly    : yes
+      #iconClass   : "italic"
+      bind        : 'mouseenter mouseleave'
       callback: =>   
         range = @ace.selection.getRange()
         
@@ -359,6 +367,11 @@ class Kodepad.Views.MainView extends JView
               row    : range.end.row
               
         @ace.focus()        
+    italicButton.on 'mouseenter', =>
+        @mdHelpView.emit 'italic'
+    
+    italicButton.on 'mouseleave', =>
+        @mdHelpView.setDefault()
         
     #@formatButtons.addSubView new KDButtonView
       #cssClass    : "clean-gray editor-button control-button underline"
@@ -378,6 +391,31 @@ class Kodepad.Views.MainView extends JView
     
     @liveViewer.previewCode do @editor.getValue
     @utils.defer => ($ window).resize()
+    @utils.wait 50, => ($ window).resize()
+        
+    @utils.wait 1000, =>
+      console.log @ace
+    
+      @ace.renderer.scrollBar.on 'scroll', =>
+          console.log 'omg scroll'
+          @setPreviewScrollPercentage @getEditScrollPercentage()
+
+  getEditScrollPercentage:->
+      scrollPosition = @ace.renderer.scrollTop
+      scrollHeight = @aceView.$().height()
+      scrollMaxheight = @aceView.getHeight()
+      scrollPosition / (scrollHeight) * 100
+
+  setPreviewScrollPercentage:(percentage)->
+    s = @liveViewer.mdPreview.$()
+      
+    s.animate
+     scrollTop : ((s[0].scrollHeight - s.height())*percentage/100)
+    , 50, "linear"
+    
+    
+    
+  
   pistachio: -> 
     """
     {{> @controlView}}

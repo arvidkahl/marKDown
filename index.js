@@ -1,4 +1,4 @@
-// Compiled by Koding Servers at Wed Apr 03 2013 17:18:42 GMT-0700 (PDT) in server time
+// Compiled by Koding Servers at Wed Apr 03 2013 20:08:51 GMT-0700 (PDT) in server time
 
 (function() {
 
@@ -45,6 +45,8 @@ Kodepad.Settings.exampleCodes.push({
 
 /* BLOCK STARTS /Source: /Users/arvidkahl/Applications/marKDown.kdapp/app/core.coffee */
 
+var __hasProp = {}.hasOwnProperty,
+  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
 Kodepad.Core.Utils = (function() {
   var _this = this;
@@ -263,6 +265,34 @@ Kodepad.Core.AppCreator = (function() {
 
 }).call(this);
 
+Kodepad.Views.HelpView = (function(_super) {
+
+  __extends(HelpView, _super);
+
+  function HelpView() {
+    var _this = this;
+    HelpView.__super__.constructor.apply(this, arguments);
+    this.text = new KDView({
+      partial: 'I am a help view'
+    });
+    this.on('bold', function() {
+      return _this.text.updatePartial('Bold text uses ** text **');
+    });
+    this.on('italic', function() {
+      return _this.text.updatePartial('Italic text uses * text *');
+    });
+  }
+
+  HelpView.prototype.setDefault = function() {};
+
+  HelpView.prototype.pistachio = function() {
+    return "{{> this.text}}";
+  };
+
+  return HelpView;
+
+})(JView);
+
 
 /* BLOCK ENDS */
 
@@ -270,13 +300,13 @@ Kodepad.Core.AppCreator = (function() {
 
 /* BLOCK STARTS /Source: /Users/arvidkahl/Applications/marKDown.kdapp/app/views.coffee */
 
-var Ace, AppCreator, LiveViewer, Settings, _ref,
+var Ace, AppCreator, HelpView, LiveViewer, Settings, _ref,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
 Settings = Kodepad.Settings, Ace = Kodepad.Ace;
 
-_ref = Kodepad.Core, LiveViewer = _ref.LiveViewer, AppCreator = _ref.AppCreator;
+_ref = Kodepad.Core, LiveViewer = _ref.LiveViewer, AppCreator = _ref.AppCreator, HelpView = _ref.HelpView;
 
 Kodepad.Views.Editor = (function() {
 
@@ -316,11 +346,11 @@ Kodepad.Views.Editor = (function() {
 })();
 
 Kodepad.Views.MainView = (function(_super) {
-  var Editor;
+  var Editor, _ref1;
 
   __extends(MainView, _super);
 
-  Editor = Kodepad.Views.Editor;
+  _ref1 = Kodepad.Views, Editor = _ref1.Editor, HelpView = _ref1.HelpView;
 
   function MainView() {
     MainView.__super__.constructor.apply(this, arguments);
@@ -329,7 +359,7 @@ Kodepad.Views.MainView = (function(_super) {
   }
 
   MainView.prototype.delegateElements = function() {
-    var item, key, overflowFix,
+    var boldButton, italicButton, item, key, overflowFix,
       _this = this;
     this.preview = new KDView({
       cssClass: "preview-pane"
@@ -349,14 +379,14 @@ Kodepad.Views.MainView = (function(_super) {
       cssClass: 'ace-wrapper-view'
     });
     this.aceWrapperView.addSubView(this.aceView);
-    this.mdHelpView = new KDView({
+    this.mdHelpView = new HelpView({
       cssClass: 'md-help-view'
     });
     this.editorSplitView = new KDSplitView({
       type: "horizontal",
       resizable: true,
-      sizes: ["90%", "10%"],
-      views: [this.aceWrapperView, this.mdHelpView]
+      sizes: ["10%", "90%"],
+      views: [this.mdHelpView, this.aceWrapperView]
     });
     overflowFix = function() {
       var height;
@@ -396,11 +426,11 @@ Kodepad.Views.MainView = (function(_super) {
       defaultValue: this.lastSelectedItem || "0",
       cssClass: 'control-button code-examples',
       selectOptions: (function() {
-        var _i, _len, _ref1, _results;
-        _ref1 = Kodepad.Settings.exampleCodes;
+        var _i, _len, _ref2, _results;
+        _ref2 = Kodepad.Settings.exampleCodes;
         _results = [];
-        for (key = _i = 0, _len = _ref1.length; _i < _len; key = ++_i) {
-          item = _ref1[key];
+        for (key = _i = 0, _len = _ref2.length; _i < _len; key = ++_i) {
+          item = _ref2[key];
           _results.push({
             title: item.title,
             value: key
@@ -432,12 +462,10 @@ Kodepad.Views.MainView = (function(_super) {
     this.formatButtons = new KDView({
       cssClass: 'header-format-buttons'
     });
-    this.formatButtons.addSubView(new KDButtonView({
+    this.formatButtons.addSubView(boldButton = new KDButtonView({
       cssClass: "clean-gray editor-button control-button bold",
       title: "B",
-      icon: true,
-      iconOnly: true,
-      iconClass: "bold",
+      bind: 'mouseenter mouseleave',
       callback: function() {
         var range;
         range = _this.ace.selection.getRange();
@@ -455,12 +483,16 @@ Kodepad.Views.MainView = (function(_super) {
         return _this.ace.focus();
       }
     }));
-    this.formatButtons.addSubView(new KDButtonView({
+    boldButton.on('mouseenter', function() {
+      return _this.mdHelpView.emit('bold');
+    });
+    boldButton.on('mouseleave', function() {
+      return _this.mdHelpView.setDefault();
+    });
+    this.formatButtons.addSubView(italicButton = new KDButtonView({
       cssClass: "clean-gray editor-button control-button italic",
       title: "I",
-      icon: true,
-      iconOnly: true,
-      iconClass: "italic",
+      bind: 'mouseenter mouseleave',
       callback: function() {
         var range;
         range = _this.ace.selection.getRange();
@@ -478,6 +510,12 @@ Kodepad.Views.MainView = (function(_super) {
         return _this.ace.focus();
       }
     }));
+    italicButton.on('mouseenter', function() {
+      return _this.mdHelpView.emit('italic');
+    });
+    italicButton.on('mouseleave', function() {
+      return _this.mdHelpView.setDefault();
+    });
     this.controlView.addSubView(this.formatButtons);
     this.controlView.addSubView(this.exampleCode.options.label);
     this.controlView.addSubView(this.exampleCode);
@@ -485,9 +523,36 @@ Kodepad.Views.MainView = (function(_super) {
     this.liveViewer.setSplitView(this.splitView);
     this.liveViewer.setMainView(this);
     this.liveViewer.previewCode(this.editor.getValue());
-    return this.utils.defer(function() {
+    this.utils.defer(function() {
       return ($(window)).resize();
     });
+    this.utils.wait(50, function() {
+      return ($(window)).resize();
+    });
+    return this.utils.wait(1000, function() {
+      console.log(_this.ace);
+      return _this.ace.renderer.scrollBar.on('scroll', function() {
+        console.log('omg scroll');
+        return _this.setPreviewScrollPercentage(_this.getEditScrollPercentage());
+      });
+    });
+  };
+
+  MainView.prototype.getEditScrollPercentage = function() {
+    var scrollHeight, scrollMaxheight, scrollPosition;
+    scrollPosition = this.ace.renderer.scrollTop;
+    scrollHeight = this.aceView.$().height();
+    scrollMaxheight = this.aceView.getHeight();
+    console.log(this.aceView.getDomElement()[0].scrollHeight, scrollMaxheight);
+    return scrollPosition / scrollHeight * 100;
+  };
+
+  MainView.prototype.setPreviewScrollPercentage = function(percentage) {
+    var s;
+    s = this.liveViewer.mdPreview.$();
+    return s.animate({
+      scrollTop: (s[0].scrollHeight - s.height()) * percentage / 100
+    }, 50, "linear");
   };
 
   MainView.prototype.pistachio = function() {
