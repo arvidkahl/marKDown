@@ -65,6 +65,10 @@
   width: 411px;
 }
 
+.marKDown .control-pane .header-buttons .orientation-buttons button{
+  margin-right:0px;
+}
+
 .marKDown .control-pane .header-format-buttons {
   width: auto;
   float: left;

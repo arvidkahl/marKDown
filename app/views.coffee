@@ -34,14 +34,8 @@ class Kodepad.Views.MainView extends JView
     
   delegateElements:->
 
-
-      #sizes     : ["0%","100%"]
-      #views     : [@mdHelpView,@aceWrapperView]    
-#
-
     @splitViewWrapper = new KDView
     
-    #@editorSplitView.addSubView @aceWrapperView
 
     # OVERFLOW FIX
     overflowFix = ->
@@ -64,7 +58,7 @@ class Kodepad.Views.MainView extends JView
           lastAceWidth = @aceView.getWidth()
       , 20
     
-    addSplitView = (type,content,width,height)=>
+    addSplitView = (type,content,selection,width,height)=>
 
       if @splitView
         # remove prior version of splitview
@@ -118,7 +112,9 @@ class Kodepad.Views.MainView extends JView
       
       @buildAce()
       
-      @utils.defer => @liveViewer.previewCode do @editor.getValue
+      @utils.defer => 
+        if selection then @ace.getSession().getSelection().setSelectionRange selection.getRange()
+        @liveViewer.previewCode do @editor.getValue
 
       
       @splitView.on 'drop', (event)=>
@@ -156,27 +152,44 @@ class Kodepad.Views.MainView extends JView
     @controlButtons = new KDView
       cssClass    : 'header-buttons'
    
-    @controlButtons.addSubView new KDButtonView
-      cssClass    : 'clean-gray editor-button control-button full-preview'
-      title       : ""
-      icon        : yes
-      iconOnly    : yes
-      iconClass   : "preview"
-      callback    : =>
-        #@splitView.state = !@splitView.state
-        #if @splitView.state
-          #@splitView.resizePanel(0,1,0)
-          #KD.utils.wait 500, =>
-            #@editor.getView().domElement.trigger "keyup"
-        #else
-          #($ window).trigger "resize"
-          #
-          #
-        newType = if @splitView.isVertical() then 'horizontal' else 'vertical'
-        #@removeSubView @splitView
-        addSplitView newType, @ace.getSession().getValue()#, '20%', '80%'
-        #@render()
-        @utils.wait 200, => @ace.resize()
+    @controlButtons.addSubView new KDButtonGroupView
+      cssClass : 'orientation-buttons fr'
+      buttons : 
+        'V5' :
+          title : 'v5'
+          callback :=>
+            addSplitView 'vertical', @ace.getSession().getValue(), @ace.getSession().getSelection(), '50%', '50%'
+            @utils.wait 200, => @ace.resize()
+
+        'V3' :
+          title:'v3'
+          callback :=>
+            addSplitView 'vertical', @ace.getSession().getValue(), @ace.getSession().getSelection(), '30%', '70%'
+            @utils.wait 200, => @ace.resize()
+
+        'H5' :
+          title : 'h5'
+          callback :=>
+            addSplitView 'horizontal', @ace.getSession().getValue(), @ace.getSession().getSelection(), '50%', '50%'   
+            @utils.wait 200, => @ace.resize()
+        'H3' :
+          title : 'h3'
+          callback :=>
+            addSplitView 'horizontal', @ace.getSession().getValue(), @ace.getSession().getSelection(), '30%', '70%'
+            @utils.wait 200, => @ace.resize()
+
+   
+    #@controlButtons.addSubView new KDButtonView
+      #cssClass    : 'clean-gray editor-button control-button full-preview'
+      #title       : ""
+      #icon        : yes
+      #iconOnly    : yes
+      #iconClass   : "preview"
+      #callback    : =>
+        #newType = if @splitView.isVertical() then 'horizontal' else 'vertical'
+        #addSplitView newType, @ace.getSession().getValue(), @ace.getSession().getSelection()#, '20%', '80%'
+#
+        #@utils.wait 200, => @ace.resize()
 
 
     @controlView = new KDView
@@ -198,19 +211,19 @@ class Kodepad.Views.MainView extends JView
         
     @controlButtons.addSubView new KDMultipleChoice
       cssClass    : "clean-gray editor-button control-button auto-manual"
-      labels      : ["Auto-Update", "Manual"]
-      defaultValue: "Auto-Update"
+      labels      : ["Update", "Manual"]
+      defaultValue: "Update"
       callback    : (state)=>
-        @liveViewer.active = if state is "Auto-Update" then yes else no
-        if state is "Auto-Update"
+        @liveViewer.active = if state is "Update" then yes else no
+        if state is "Update"
           @liveViewer.previewCode do @editor.getValue
     
     @controlButtons.addSubView new KDMultipleChoice
       cssClass    : "clean-gray editor-button control-button scroll-switch"
-      labels      : ["Auto-Scroll", "Manual"]
-      defaultValue: "Auto-Scroll"
+      labels      : ["Scroll", "Manual"]
+      defaultValue: "Scroll"
       callback    : (state)=>
-        @autoScroll = state is "Auto-Scroll"
+        @autoScroll = state is "Scroll"
             
     @formatButtons = new KDView
       cssClass    : 'header-format-buttons'

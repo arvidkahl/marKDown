@@ -1,4 +1,4 @@
-// Compiled by Koding Servers at Fri Apr 05 2013 15:21:49 GMT-0700 (PDT) in server time
+// Compiled by Koding Servers at Fri Apr 05 2013 15:44:21 GMT-0700 (PDT) in server time
 
 (function() {
 
@@ -407,7 +407,7 @@ Kodepad.Views.MainView = (function(_super) {
         }
       }, 20);
     })();
-    addSplitView = function(type, content, width, height) {
+    addSplitView = function(type, content, selection, width, height) {
       if (_this.splitView) {
         _this.splitView.off('drop');
         _this.splitViewWrapper.destroySubViews();
@@ -457,6 +457,9 @@ Kodepad.Views.MainView = (function(_super) {
       _this.splitViewWrapper.addSubView(_this.splitView);
       _this.buildAce();
       _this.utils.defer(function() {
+        if (selection) {
+          _this.ace.getSession().getSelection().setSelectionRange(selection.getRange());
+        }
         return _this.liveViewer.previewCode(_this.editor.getValue());
       });
       return _this.splitView.on('drop', function(event) {
@@ -501,20 +504,45 @@ Kodepad.Views.MainView = (function(_super) {
     this.controlButtons = new KDView({
       cssClass: 'header-buttons'
     });
-    this.controlButtons.addSubView(new KDButtonView({
-      cssClass: 'clean-gray editor-button control-button full-preview',
-      title: "",
-      icon: true,
-      iconOnly: true,
-      iconClass: "preview",
-      callback: function() {
-        var newType;
-
-        newType = _this.splitView.isVertical() ? 'horizontal' : 'vertical';
-        addSplitView(newType, _this.ace.getSession().getValue());
-        return _this.utils.wait(200, function() {
-          return _this.ace.resize();
-        });
+    this.controlButtons.addSubView(new KDButtonGroupView({
+      cssClass: 'orientation-buttons fr',
+      buttons: {
+        'V5': {
+          title: 'v5',
+          callback: function() {
+            addSplitView('vertical', _this.ace.getSession().getValue(), _this.ace.getSession().getSelection(), '50%', '50%');
+            return _this.utils.wait(200, function() {
+              return _this.ace.resize();
+            });
+          }
+        },
+        'V3': {
+          title: 'v3',
+          callback: function() {
+            addSplitView('vertical', _this.ace.getSession().getValue(), _this.ace.getSession().getSelection(), '30%', '70%');
+            return _this.utils.wait(200, function() {
+              return _this.ace.resize();
+            });
+          }
+        },
+        'H5': {
+          title: 'h5',
+          callback: function() {
+            addSplitView('horizontal', _this.ace.getSession().getValue(), _this.ace.getSession().getSelection(), '50%', '50%');
+            return _this.utils.wait(200, function() {
+              return _this.ace.resize();
+            });
+          }
+        },
+        'H3': {
+          title: 'h3',
+          callback: function() {
+            addSplitView('horizontal', _this.ace.getSession().getValue(), _this.ace.getSession().getSelection(), '30%', '70%');
+            return _this.utils.wait(200, function() {
+              return _this.ace.resize();
+            });
+          }
+        }
       }
     }));
     this.controlView = new KDView({
@@ -550,21 +578,21 @@ Kodepad.Views.MainView = (function(_super) {
     });
     this.controlButtons.addSubView(new KDMultipleChoice({
       cssClass: "clean-gray editor-button control-button auto-manual",
-      labels: ["Auto-Update", "Manual"],
-      defaultValue: "Auto-Update",
+      labels: ["Update", "Manual"],
+      defaultValue: "Update",
       callback: function(state) {
-        _this.liveViewer.active = state === "Auto-Update" ? true : false;
-        if (state === "Auto-Update") {
+        _this.liveViewer.active = state === "Update" ? true : false;
+        if (state === "Update") {
           return _this.liveViewer.previewCode(_this.editor.getValue());
         }
       }
     }));
     this.controlButtons.addSubView(new KDMultipleChoice({
       cssClass: "clean-gray editor-button control-button scroll-switch",
-      labels: ["Auto-Scroll", "Manual"],
-      defaultValue: "Auto-Scroll",
+      labels: ["Scroll", "Manual"],
+      defaultValue: "Scroll",
       callback: function(state) {
-        return _this.autoScroll = state === "Auto-Scroll";
+        return _this.autoScroll = state === "Scroll";
       }
     }));
     this.formatButtons = new KDView({
