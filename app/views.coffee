@@ -112,16 +112,17 @@ class Kodepad.Views.MainView extends JView
               text += """[#{uri}](#{uri})"""
             else text += """![#{uri}](#{uri})"""
             
-            # now here is a hack  if I ever saw one
-            @utils.wait 50, => @ace.getSession().getUndoManager().undo()
+            # now here is a hack  if I ever saw one. catch the insert, delete it again! 
+            @ace.getSession().remove @ace.getSession().getSelection().getRange()
             
           if "Files" in types and files = dataTransfer.files
             console.log 'files exist, they will be uploaded here'
             if files.length then for file in files
               text += """![#{file.name}](#{file.name})"""
           
-          # needs to be delayed so we can remove prior pastes
-          @utils.wait 100, => if text.length then @ace.session.insert(@ace.renderer.screenToTextCoordinates(event.originalEvent.clientX,event.originalEvent.clientY),text)
+          # needs to be deferred so we can remove prior pastes
+          @utils.defer => if text.length
+            @ace.session.insert(@ace.renderer.screenToTextCoordinates(event.originalEvent.clientX,event.originalEvent.clientY),text)
       
         
     @controlView = new KDView
@@ -471,6 +472,11 @@ class Kodepad.Views.MainView extends JView
       @ace.getSession().setUseSoftTabs true
       @ace.getSession().setValue @editor.getValue()
       @ace.getSession().on "change", -> do update
+      
+      @ace.getSession().on 'drop', => console.log 'drop'
+      console.log @ace
+      
+      
       @editor.setValue @ace.getSession().getValue()
       @ace.commands.addCommand
         name    : 'save'

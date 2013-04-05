@@ -1,4 +1,4 @@
-// Compiled by Koding Servers at Thu Apr 04 2013 19:31:47 GMT-0700 (PDT) in server time
+// Compiled by Koding Servers at Thu Apr 04 2013 21:05:55 GMT-0700 (PDT) in server time
 
 (function() {
 
@@ -439,9 +439,7 @@ Kodepad.Views.MainView = (function(_super) {
           } else {
             text += "![" + uri + "](" + uri + ")";
           }
-          _this.utils.wait(50, function() {
-            return _this.ace.getSession().getUndoManager().undo();
-          });
+          _this.ace.getSession().remove(_this.ace.getSession().getSelection().getRange());
         }
         if (__indexOf.call(types, "Files") >= 0 && (files = dataTransfer.files)) {
           console.log('files exist, they will be uploaded here');
@@ -452,7 +450,7 @@ Kodepad.Views.MainView = (function(_super) {
             }
           }
         }
-        return _this.utils.wait(100, function() {
+        return _this.utils.defer(function() {
           if (text.length) {
             return _this.ace.session.insert(_this.ace.renderer.screenToTextCoordinates(event.originalEvent.clientX, event.originalEvent.clientY), text);
           }
@@ -629,6 +627,10 @@ Kodepad.Views.MainView = (function(_super) {
       this.ace.getSession().on("change", function() {
         return update();
       });
+      this.ace.getSession().on('drop', function() {
+        return console.log('drop');
+      });
+      console.log(this.ace);
       this.editor.setValue(this.ace.getSession().getValue());
       return this.ace.commands.addCommand({
         name: 'save',
