@@ -33,34 +33,13 @@ class Kodepad.Views.MainView extends JView
     @autoScroll = yes
     
   delegateElements:->
-    @preview = new KDView
-      cssClass: "preview-pane"
-      
-    @liveViewer.setPreviewView @preview
-    
-    @editor = new Editor
-      defaultValue: Settings.exampleCodes[0].markdown
-      callback: =>
-        @liveViewer.previewCode do @editor.getValue
-    @editor.getView().hide()
-        
-    @aceView = new KDView
-      cssClass: 'editor code-editor'
 
-    @aceWrapperView = new KDView
-      cssClass : 'ace-wrapper-view'
-    
-    @aceWrapperView.addSubView @aceView
 
-    @mdHelpView = new HelpView
-      cssClass : 'md-help-view'
+      #sizes     : ["0%","100%"]
+      #views     : [@mdHelpView,@aceWrapperView]    
+#
 
-    @editorSplitView = new KDSplitView
-      type      : "horizontal"
-      resizable : yes
-      sizes     : ["0%","100%"]
-      views     : [@mdHelpView,@aceWrapperView]
-
+    @splitViewWrapper = new KDView
     
     #@editorSplitView.addSubView @aceWrapperView
 
@@ -84,16 +63,65 @@ class Kodepad.Views.MainView extends JView
           lastAceHeight = @aceView.getHeight()
           lastAceWidth = @aceView.getWidth()
       , 20
+    
+    addSplitView = (type,content,width,height)=>
 
-    @splitView = new KDSplitView
-      cssClass  : "kodepad-editors"
-      type      : "vertical"
-      resizable : yes
-      sizes     : ["50%", "50%"]
-      views     : [@editorSplitView, @preview]
-      bind      : 'drop dragenter dragover dragleave'
+      if @splitView
+        # remove prior version of splitview
+        @splitView.off 'drop'
+        @splitViewWrapper.destroySubViews() 
+
+        # and get rid of the old md preview
+        @liveViewer.mdPreview.destroy()
+        @liveViewer.mdPreview= null
+        delete @liveViewer.mdPreview
+
+      @preview = new KDView
+        cssClass: "preview-pane"
       
-    @splitView.on 'drop', (event)=>
+      @liveViewer.setPreviewView @preview
+    
+
+      @editor = new Editor
+        defaultValue: content or Settings.exampleCodes[0].markdown
+        callback: =>
+          console.log 'le preview?'
+          @liveViewer.previewCode do @editor.getValue
+      @editor.getView().hide()
+        
+      @aceView = new KDView
+      cssClass: 'editor code-editor'
+
+      @aceWrapperView = new KDView
+      cssClass : 'ace-wrapper-view'
+    
+      @aceWrapperView.addSubView @aceView
+
+      @mdHelpView = new HelpView
+      cssClass : 'md-help-view'
+
+      @editorSplitView = new KDSplitView
+        type      : "horizontal"
+        resizable : yes
+        sizes     : ["100%"]
+        views     : [@aceWrapperView]    
+
+      @splitView = new KDSplitView
+        cssClass  : "kodepad-editors"
+        type      : type or "vertical"
+        resizable : yes
+        sizes     : [width or "50%", height or "50%"]
+        views     : [@editorSplitView, @preview]
+        bind      : 'drop dragenter dragover dragleave'
+
+      @splitViewWrapper.addSubView @splitView
+      
+      @buildAce()
+      
+      @utils.defer => @liveViewer.previewCode do @editor.getValue
+
+      
+      @splitView.on 'drop', (event)=>
         console.log arguments
         console.log 'item was dropped'
         event.stopPropagation()
@@ -123,168 +151,11 @@ class Kodepad.Views.MainView extends JView
           @utils.defer => if text.length
             @ace.session.insert(@ace.renderer.screenToTextCoordinates(event.originalEvent.clientX,event.originalEvent.clientY),text)
       
-        
-    @controlView = new KDView
-      cssClass: 'control-pane editor-header'
-      
-    @exampleCode = new KDSelectBox
-      label: new KDLabelView
-        title: 'markdown Examples: '
-        
-      defaultValue: @lastSelectedItem or "0"
-      cssClass: 'control-button code-examples'
-      selectOptions: ({title: item.title, value: key} for item, key in Kodepad.Settings.exampleCodes)
-      callback: =>
-        @lastSelectedItem = @exampleCode.getValue()        
-        {markdown} = Kodepad.Settings.exampleCodes[@lastSelectedItem]
-        @ace.getSession().setValue markdown
+    addSplitView 'vertical'
     
     @controlButtons = new KDView
       cssClass    : 'header-buttons'
-        
-    #@controlButtons.addSubView new KDButtonViewWithMenu
-      #cssClass        : 'clean-gray editor-button control-button save-as-kdapp'
-      #title           : "Save"
-      #menu            : =>
-        #"Save as GitHub Gist...":
-          #callback    : =>
-            #
-            #coffee    = @ace.getSession().getValue()
-            #
-            #new KDNotificationView 
-              #title: "Kodepad is creating your Gist..."
-              #
-            #AppCreator.getSingleton().createGist coffee, '', (err, res)->
-              #if err
-                #new KDNotificationView 
-                  #title: "An error occured while creating gist, try again."
-                  #
-              #modal = new KDModalView
-                #overlay : yes
-                #title     : "Your Gist is ready!"
-                #content   : """
-                                #<div class='modalformline'>
-                                  #<p><b>#{res.html_url}</b></p>
-                                #</div>
-                            #"""
-                #buttons     :
-                  #"Open Gist":
-                    #cssClass: "modal-clean-green"
-                    #callback: ->
-                      #window.open res.html_url, "_blank"
-                      #
-        #"Load from GitHub Gist...":
-          #callback: =>
-            #modal = new KDModalViewWithForms
-              #overlay : yes
-              #title   : "Load from Gist URL"
-              #content : """
-                #<div class='modalformline'>
-                  #<p>
-                    #You can load a gist as an application and run it in Kodepad.
-                    #The gist must contain <code>index.coffee</code> and <code>style.css</code> files.
-                  #</p>
-                  #<p>
-                      #The gist code you are going to load can reach (and modify) all of your files, settings and 
-                      #all other information you shared with Koding. If you don't know what you are doing, 
-                      #it's <strong>not recommended</strong> to run external code on Kodepad.
-                  #</p>
-                #</div>
-              #"""
-              #tabs                    :
-                #navigable             : yes
-                #forms                 :
-                  #"Gist URL"          :
-                    #fields            :
-                      #url             :
-                        #label         : "Gist URL: "
-                        #name          : "url"
-                        #placeholder   : "enter a gist url..."
-                        #validate      :
-                          #rules       :
-                            #regExp    : /^https?:\/\/gist\.github\.com\//
-                          #messages    :
-                            #regExp    : "You must enter a real gist url."
-                    #buttons           :
-                      #"I know the risks, load and run":
-                        #cssClass      : "modal-clean-gray"
-                        #callback      : =>
-                          #
-                          #if not modal.modalTabs.forms["Gist URL"].inputs.url.validate()
-                            #return
-                            #
-                          #url = modal.modalTabs.forms["Gist URL"].inputs.url.getValue()
-                          #
-                          #url = url.replace /^.*\/(\d+)$/g, 'https://api.github.com/gists/$1'
-                          #
-                          #notify = new KDNotificationView
-                            #title : "Loading Gist..."
-                            #
-                          #kite = KD.getSingleton "kiteController"
-                          #kite.run "curl -kL #{url}", (error, data) =>
-                            #try data = JSON.parse data
-                            #
-                            #debugger
-                            #
-                            #if not error
-                              #@ace.getSession().setValue data.files["index.coffee"].content
-                              #
-                              #notify.destroy()
-                              #modal.destroy()
-                              #notify = new KDNotificationView
-                                #title : "Gist Loaded!"
-                            #else
-                              #notify = new KDNotificationView
-                                #title : "Try again. :("
-                #
-      #
-      #callback: =>
-        #modal = new KDModalViewWithForms
-          #title                     : "Save Application"
-          #content                   : """
-              #<div class='modalformline'>
-                #<p>You can build an application using Kodepad. Please set your application up.</p>
-                #<p>Don't forget to edit <code>.manifest</code> file in your application directory.</p>
-              #</div>
-          #"""
-          #overlay                   : yes
-          #height                    : "auto"
-          #tabs                      :
-            #navigable               : yes
-            #forms                   : 
-              #"Settings": 
-                #fields              : 
-                  #name              :
-                    #label           : "Name: "
-                    #name            : "name"
-                    #placeholder     : "name your application..."
-                    #validate        :
-                      #rules         :
-                        #regExp      : /^[a-z\d]+([-][a-z\d]+)*$/i
-                      #messages      :
-                        #regExp      : "For Application name only lowercase letters and numbers are allowed!"
-                #buttons             :
-                  #"Save":
-                    #cssClass        : "modal-clean-gray"
-                    #callback        : =>
-                      #
-                      #if not modal.modalTabs.forms.Settings.inputs.name.validate()
-                        #return
-                      #
-                      #name      = modal.modalTabs.forms.Settings.inputs.name.getValue()
-                      #
-                      #coffee    = @ace.getSession().getValue()
-                      #
-                      #notify = new KDNotificationView
-                        #title : "Application #{name} is being created now..."
-                      #
-                      #AppCreator.getSingleton().create name, coffee, '', ->
-                        #
-                        #notify.destroy()
-                        #modal.destroy()
-                        #new KDNotificationView
-                          #title : "Your application #{name} is ready! Have fun. :)"
-    #
+   
     @controlButtons.addSubView new KDButtonView
       cssClass    : 'clean-gray editor-button control-button full-preview'
       title       : ""
@@ -300,54 +171,31 @@ class Kodepad.Views.MainView extends JView
         #else
           #($ window).trigger "resize"
           #
-         
-        o = @splitView.getOptions()
-        o.type = if @splitView.isVertical() then 'horizontal' else 'vertical'
-        @splitView.setOptions o
-        console.log "test!",o.type
-        @splitView._resizePanels()
-        ($ window).trigger 'resize'
-          
-        #@splitView.getOptions().type
-          
-    #toggleTransparency = new KDToggleButton
-      #style       : "kdwhitebtn"
-      #cssClass    : "clean-gray editor-button control-button transp"
-      #states      : [
-        #"Transparent", (callback)=>
-          #@preview.domElement.addClass 'transparented'
-          #toggleTransparency.domElement.addClass 'transparented'
-          #do callback
-        #"Opaque", (callback)=>
-          #@preview.domElement.removeClass 'transparented'
-          #toggleTransparency.domElement.removeClass 'transparented'
-          #do callback
-      #]   
-#
-    #@controlButtons.addSubView toggleTransparency
-    #
-    #runApp = (appName)-> 
-      #appController = KD.getSingleton "kodingAppsController"
-      #appManifest = appController.constructor.manifests[appName]
-      #if appManifest
-        #appController.runApp appManifest
-        #return true
-      #else
-        #return false
-    #
-    #@controlButtons.addSubView new KDButtonView
-      #cssClass    : "clean-gray editor-button control-button"
-      #title       : ""
-      #icon        : yes
-      #iconOnly    : yes
-      #iconClass   : "docs"
-      #callback: =>
-        #docsApp = runApp "Koding Docs"
-        #if not docsApp 
-          #new KDNotificationView
-            #title: "Koding Docs is not installed!"
-            #content: "This button is a shortcut to run Koding Docs, so you must install it."
-              
+          #
+        newType = if @splitView.isVertical() then 'horizontal' else 'vertical'
+        #@removeSubView @splitView
+        addSplitView newType, @ace.getSession().getValue()#, '20%', '80%'
+        #@render()
+        @utils.wait 200, => @ace.resize()
+
+
+    @controlView = new KDView
+      cssClass: 'control-pane editor-header'
+      
+    @exampleCode = new KDSelectBox
+      label: new KDLabelView
+        title: 'markdown Examples: '
+        
+      defaultValue: @lastSelectedItem or "0"
+      cssClass: 'control-button code-examples'
+      selectOptions: ({title: item.title, value: key} for item, key in Kodepad.Settings.exampleCodes)
+      callback: =>
+        @lastSelectedItem = @exampleCode.getValue()        
+        {markdown} = Kodepad.Settings.exampleCodes[@lastSelectedItem]
+        @ace.getSession().setValue markdown
+
+
+        
     @controlButtons.addSubView new KDMultipleChoice
       cssClass    : "clean-gray editor-button control-button auto-manual"
       labels      : ["Auto-Update", "Manual"]
@@ -530,7 +378,7 @@ class Kodepad.Views.MainView extends JView
     """
     {{> @controlView}}
     {{> @editor.getView()}}
-    {{> @splitView}}
+    {{> @splitViewWrapper}}
     """
   buildAce: ->
     ace = @getOptions().ace
@@ -548,11 +396,7 @@ class Kodepad.Views.MainView extends JView
       @ace.getSession().setUseSoftTabs true
       @ace.getSession().setValue @editor.getValue()
       @ace.getSession().on "change", -> do update
-      
-      @ace.getSession().on 'drop', => console.log 'drop'
-      console.log @ace
-      
-      
+            
       @editor.setValue @ace.getSession().getValue()
       @ace.commands.addCommand
         name    : 'save'

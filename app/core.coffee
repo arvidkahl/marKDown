@@ -19,8 +19,6 @@ class Kodepad.Core.LiveViewer
   constructor: ()->
     @sessionId = KD.utils.uniqueId "kodepadSession"
   
-  applyBold: ->
-  
   setPreviewView: (@previewView)->
     
   setSplitView: (@splitView)->
@@ -33,6 +31,7 @@ class Kodepad.Core.LiveViewer
     # Binding appView to preview, so 
     # appView will work as preview.
     require ["https://raw.github.com/chjj/marked/master/lib/marked.js"], (marked)=>
+      
       window.appView = @previewView
       try
         options.gfm         ?= yes

@@ -1,4 +1,4 @@
-// Compiled by Koding Servers at Fri Apr 05 2013 12:42:46 GMT-0700 (PDT) in server time
+// Compiled by Koding Servers at Fri Apr 05 2013 15:21:49 GMT-0700 (PDT) in server time
 
 (function() {
 
@@ -92,8 +92,6 @@ Kodepad.Core.LiveViewer = (function() {
   function LiveViewer() {
     this.sessionId = KD.utils.uniqueId("kodepadSession");
   }
-
-  LiveViewer.prototype.applyBold = function() {};
 
   LiveViewer.prototype.setPreviewView = function(previewView) {
     this.previewView = previewView;
@@ -381,36 +379,10 @@ Kodepad.Views.MainView = (function(_super) {
   }
 
   MainView.prototype.delegateElements = function() {
-    var boldButton, codeButton, formatCode, imageButton, inlineButton, italicButton, item, key, linkButton, overflowFix,
+    var addSplitView, boldButton, codeButton, formatCode, imageButton, inlineButton, italicButton, item, key, linkButton, overflowFix,
       _this = this;
 
-    this.preview = new KDView({
-      cssClass: "preview-pane"
-    });
-    this.liveViewer.setPreviewView(this.preview);
-    this.editor = new Editor({
-      defaultValue: Settings.exampleCodes[0].markdown,
-      callback: function() {
-        return _this.liveViewer.previewCode(_this.editor.getValue());
-      }
-    });
-    this.editor.getView().hide();
-    this.aceView = new KDView({
-      cssClass: 'editor code-editor'
-    });
-    this.aceWrapperView = new KDView({
-      cssClass: 'ace-wrapper-view'
-    });
-    this.aceWrapperView.addSubView(this.aceView);
-    this.mdHelpView = new HelpView({
-      cssClass: 'md-help-view'
-    });
-    this.editorSplitView = new KDSplitView({
-      type: "horizontal",
-      resizable: true,
-      sizes: ["0%", "100%"],
-      views: [this.mdHelpView, this.aceWrapperView]
-    });
+    this.splitViewWrapper = new KDView;
     overflowFix = function() {
       var height;
 
@@ -435,51 +407,116 @@ Kodepad.Views.MainView = (function(_super) {
         }
       }, 20);
     })();
-    this.splitView = new KDSplitView({
-      cssClass: "kodepad-editors",
-      type: "vertical",
-      resizable: true,
-      sizes: ["50%", "50%"],
-      views: [this.editorSplitView, this.preview],
-      bind: 'drop dragenter dragover dragleave'
-    });
-    this.splitView.on('drop', function(event) {
-      var dataTransfer, file, files, text, types, uri, _i, _len, _ref2;
-
-      console.log(arguments);
-      console.log('item was dropped');
-      event.stopPropagation();
-      event.preventDefault();
-      dataTransfer = event != null ? (_ref2 = event.originalEvent) != null ? _ref2.dataTransfer : void 0 : void 0;
-      if (dataTransfer) {
-        types = dataTransfer.types;
-        console.log(types);
-        text = "";
-        if (__indexOf.call(types, "text/uri-list") >= 0) {
-          uri = dataTransfer.getData('text/uri-list');
-          if (!/\.(jpe?g|png|gif|ico)/.test(uri)) {
-            text += "[" + uri + "](" + uri + ")";
-          } else {
-            text += "![" + uri + "](" + uri + ")";
-          }
-          _this.ace.getSession().remove(_this.ace.getSession().getSelection().getRange());
+    addSplitView = function(type, content, width, height) {
+      if (_this.splitView) {
+        _this.splitView.off('drop');
+        _this.splitViewWrapper.destroySubViews();
+        _this.liveViewer.mdPreview.destroy();
+        _this.liveViewer.mdPreview = null;
+        delete _this.liveViewer.mdPreview;
+      }
+      _this.preview = new KDView({
+        cssClass: "preview-pane"
+      });
+      _this.liveViewer.setPreviewView(_this.preview);
+      _this.editor = new Editor({
+        defaultValue: content || Settings.exampleCodes[0].markdown,
+        callback: function() {
+          console.log('le preview?');
+          return _this.liveViewer.previewCode(_this.editor.getValue());
         }
-        if (__indexOf.call(types, "Files") >= 0 && (files = dataTransfer.files)) {
-          console.log('files exist, they will be uploaded here');
-          if (files.length) {
-            for (_i = 0, _len = files.length; _i < _len; _i++) {
-              file = files[_i];
-              text += "![" + file.name + "](" + file.name + ")";
+      });
+      _this.editor.getView().hide();
+      _this.aceView = new KDView;
+      ({
+        cssClass: 'editor code-editor'
+      });
+      _this.aceWrapperView = new KDView;
+      ({
+        cssClass: 'ace-wrapper-view'
+      });
+      _this.aceWrapperView.addSubView(_this.aceView);
+      _this.mdHelpView = new HelpView;
+      ({
+        cssClass: 'md-help-view'
+      });
+      _this.editorSplitView = new KDSplitView({
+        type: "horizontal",
+        resizable: true,
+        sizes: ["100%"],
+        views: [_this.aceWrapperView]
+      });
+      _this.splitView = new KDSplitView({
+        cssClass: "kodepad-editors",
+        type: type || "vertical",
+        resizable: true,
+        sizes: [width || "50%", height || "50%"],
+        views: [_this.editorSplitView, _this.preview],
+        bind: 'drop dragenter dragover dragleave'
+      });
+      _this.splitViewWrapper.addSubView(_this.splitView);
+      _this.buildAce();
+      _this.utils.defer(function() {
+        return _this.liveViewer.previewCode(_this.editor.getValue());
+      });
+      return _this.splitView.on('drop', function(event) {
+        var dataTransfer, file, files, text, types, uri, _i, _len, _ref2;
+
+        console.log(arguments);
+        console.log('item was dropped');
+        event.stopPropagation();
+        event.preventDefault();
+        dataTransfer = event != null ? (_ref2 = event.originalEvent) != null ? _ref2.dataTransfer : void 0 : void 0;
+        if (dataTransfer) {
+          types = dataTransfer.types;
+          console.log(types);
+          text = "";
+          if (__indexOf.call(types, "text/uri-list") >= 0) {
+            uri = dataTransfer.getData('text/uri-list');
+            if (!/\.(jpe?g|png|gif|ico)/.test(uri)) {
+              text += "[" + uri + "](" + uri + ")";
+            } else {
+              text += "![" + uri + "](" + uri + ")";
+            }
+            _this.ace.getSession().remove(_this.ace.getSession().getSelection().getRange());
+          }
+          if (__indexOf.call(types, "Files") >= 0 && (files = dataTransfer.files)) {
+            console.log('files exist, they will be uploaded here');
+            if (files.length) {
+              for (_i = 0, _len = files.length; _i < _len; _i++) {
+                file = files[_i];
+                text += "![" + file.name + "](" + file.name + ")";
+              }
             }
           }
+          return _this.utils.defer(function() {
+            if (text.length) {
+              return _this.ace.session.insert(_this.ace.renderer.screenToTextCoordinates(event.originalEvent.clientX, event.originalEvent.clientY), text);
+            }
+          });
         }
-        return _this.utils.defer(function() {
-          if (text.length) {
-            return _this.ace.session.insert(_this.ace.renderer.screenToTextCoordinates(event.originalEvent.clientX, event.originalEvent.clientY), text);
-          }
+      });
+    };
+    addSplitView('vertical');
+    this.controlButtons = new KDView({
+      cssClass: 'header-buttons'
+    });
+    this.controlButtons.addSubView(new KDButtonView({
+      cssClass: 'clean-gray editor-button control-button full-preview',
+      title: "",
+      icon: true,
+      iconOnly: true,
+      iconClass: "preview",
+      callback: function() {
+        var newType;
+
+        newType = _this.splitView.isVertical() ? 'horizontal' : 'vertical';
+        addSplitView(newType, _this.ace.getSession().getValue());
+        return _this.utils.wait(200, function() {
+          return _this.ace.resize();
         });
       }
-    });
+    }));
     this.controlView = new KDView({
       cssClass: 'control-pane editor-header'
     });
@@ -511,26 +548,6 @@ Kodepad.Views.MainView = (function(_super) {
         return _this.ace.getSession().setValue(markdown);
       }
     });
-    this.controlButtons = new KDView({
-      cssClass: 'header-buttons'
-    });
-    this.controlButtons.addSubView(new KDButtonView({
-      cssClass: 'clean-gray editor-button control-button full-preview',
-      title: "",
-      icon: true,
-      iconOnly: true,
-      iconClass: "preview",
-      callback: function() {
-        var o;
-
-        o = _this.splitView.getOptions();
-        o.type = _this.splitView.isVertical() ? 'horizontal' : 'vertical';
-        _this.splitView.setOptions(o);
-        console.log("test!", o.type);
-        _this.splitView._resizePanels();
-        return ($(window)).trigger('resize');
-      }
-    }));
     this.controlButtons.addSubView(new KDMultipleChoice({
       cssClass: "clean-gray editor-button control-button auto-manual",
       labels: ["Auto-Update", "Manual"],
@@ -648,9 +665,8 @@ Kodepad.Views.MainView = (function(_super) {
     formatCode = function(syntax) {
       var range;
 
-      console.log('formatting');
       range = _this.ace.selection.getRange();
-      _this.ace.session.replace(range, "```" + syntax + "\n" + (_this.ace.getCopyText() || 'Code') + "\n```");
+      _this.ace.session.replace(range, "```" + syntax + "\n" + (_this.ace.getCopyText() || 'Code Block') + "\n```");
       return _this.ace.focus();
     };
     this.formatButtons.addSubView(codeButton = new KDButtonViewWithMenu({
@@ -724,7 +740,7 @@ Kodepad.Views.MainView = (function(_super) {
   };
 
   MainView.prototype.pistachio = function() {
-    return "{{> this.controlView}}\n{{> this.editor.getView()}}\n{{> this.splitView}}";
+    return "{{> this.controlView}}\n{{> this.editor.getView()}}\n{{> this.splitViewWrapper}}";
   };
 
   MainView.prototype.buildAce = function() {
@@ -746,10 +762,6 @@ Kodepad.Views.MainView = (function(_super) {
       this.ace.getSession().on("change", function() {
         return update();
       });
-      this.ace.getSession().on('drop', function() {
-        return console.log('drop');
-      });
-      console.log(this.ace);
       this.editor.setValue(this.ace.getSession().getValue());
       return this.ace.commands.addCommand({
         name: 'save',
@@ -786,14 +798,15 @@ var MainView;
 MainView = Kodepad.Views.MainView;
 
 (function() {
-  var loader, markdownModal;
+  var loader, mainView, markdownModal;
 
+  KD.enableLogs();
+  console.log('Development version of marKDown starting...');
   loader = new KDView({
     cssClass: "marKDown loading",
     partial: "Loading marKDown..."
   });
-  KD.enableLogs();
-  console.log('Development version of marKDown starting...');
+  mainView = {};
   markdownModal = new KDModalView({
     width: window.innerWidth - 100,
     height: window.innerHeight - 100,
@@ -807,10 +820,15 @@ MainView = Kodepad.Views.MainView;
         },
         style: "modal-clean-gray",
         callback: function() {
+          var value;
+
           new KDNotificationView({
             title: "Clicked yes!"
           });
-          return markdownModal.destroy();
+          value = mainView.ace.getSession().getValue();
+          console.log(value);
+          markdownModal.destroy();
+          return value;
         }
       },
       No: {
@@ -820,21 +838,27 @@ MainView = Kodepad.Views.MainView;
         },
         style: "modal-clean-gray",
         callback: function() {
+          var value;
+
           new KDNotificationView({
             title: "Clicked no!"
           });
-          return markdownModal.destroy();
+          value = mainView.ace.getSession().getValue();
+          console.log(value);
+          markdownModal.destroy();
+          return value;
         }
       }
     }
   });
   markdownModal.addSubView(loader);
   return require(["ace/ace"], function(Ace) {
-    markdownModal.removeSubView(loader);
-    markdownModal.addSubView(new MainView({
+    mainView = new MainView({
       cssClass: "marKDown",
       ace: Ace
-    }));
+    });
+    markdownModal.removeSubView(loader);
+    markdownModal.addSubView(mainView);
     return markdownModal.$('.kdmodal-content').height(window.innerHeight - 95);
   });
 })();
