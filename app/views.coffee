@@ -1,6 +1,6 @@
 {Settings, Ace}   = Kodepad
 {LiveViewer, AppCreator, HelpView} = Kodepad.Core
-{log} = console
+
 class Kodepad.Views.Editor
   constructor: (options)->
     
@@ -33,7 +33,6 @@ class Kodepad.Views.MainView extends JView
     @autoScroll = yes
     
   delegateElements:->
-    
     @preview = new KDView
       cssClass: "preview-pane"
       
@@ -293,13 +292,22 @@ class Kodepad.Views.MainView extends JView
       iconOnly    : yes
       iconClass   : "preview"
       callback    : =>
-        @splitView.state = !@splitView.state
-        if @splitView.state
-          @splitView.resizePanel(0,1,0)
-          KD.utils.wait 500, =>
-            @editor.getView().domElement.trigger "keyup"
-        else
-          ($ window).trigger "resize"
+        #@splitView.state = !@splitView.state
+        #if @splitView.state
+          #@splitView.resizePanel(0,1,0)
+          #KD.utils.wait 500, =>
+            #@editor.getView().domElement.trigger "keyup"
+        #else
+          #($ window).trigger "resize"
+          #
+         
+        o = @splitView.getOptions()
+        o.type = if @splitView.isVertical() then 'horizontal' else 'vertical'
+        @splitView.setOptions o
+        console.log "test!",o.type
+        @splitView._resizePanels()
+        ($ window).trigger 'resize'
+          
         #@splitView.getOptions().type
           
     #toggleTransparency = new KDToggleButton
@@ -412,6 +420,74 @@ class Kodepad.Views.MainView extends JView
     
     italicButton.on 'mouseleave', =>
         @mdHelpView.setDefault()
+        
+    @formatButtons.addSubView linkButton = new KDButtonView
+      cssClass    : "clean-gray editor-button control-button link"
+      title       : "Link"
+      #icon        : yes
+      #iconOnly    : yes
+      #iconClass   : "italic"
+      bind        : 'mouseenter mouseleave'
+      callback: =>   
+        range = @ace.selection.getRange()
+        
+        @ace.session.replace range, """[#{@ace.getCopyText() or 'Link Text'}](#{@ace.getCopyText() or 'Link_URL "Link Title"'})"""
+        @ace.focus()     
+          
+    @formatButtons.addSubView imageButton = new KDButtonView
+      cssClass    : "clean-gray editor-button control-button image"
+      title       : "Image"
+      #icon        : yes
+      #iconOnly    : yes
+      #iconClass   : "italic"
+      bind        : 'mouseenter mouseleave'
+      callback: =>   
+        range = @ace.selection.getRange()
+        
+        @ace.session.replace range, """![#{@ace.getCopyText() or 'Alt Text'}](#{@ace.getCopyText() or 'Image_URL "Optional Title"'})"""
+        @ace.focus()     
+              
+    @formatButtons.addSubView inlineButton = new KDButtonView
+      cssClass    : "clean-gray editor-button control-button inline"
+      title       : "Inline Code"
+      #icon        : yes
+      #iconOnly    : yes
+      #iconClass   : "italic"
+      bind        : 'mouseenter mouseleave'
+      callback: =>   
+        range = @ace.selection.getRange()
+        
+        @ace.session.replace range, """`#{@ace.getCopyText() or 'Inline Code'}`"""
+        @ace.focus()     
+    
+    formatCode = (syntax)=>
+        range = @ace.selection.getRange()
+        
+        @ace.session.replace range, """```#{syntax}\n#{@ace.getCopyText() or 'Code Block'}\n```"""
+        @ace.focus()     
+
+    @formatButtons.addSubView codeButton = new KDButtonViewWithMenu
+      cssClass    : "clean-gray editor-button control-button code"
+      title       : "Code Block"
+      #icon        : yes
+      #iconOnly    : yes
+      #iconClass   : "italic"
+      bind        : 'mouseenter mouseleave'
+      menu :=>
+        'JavaScript' :  
+          callback: => 
+             formatCode 'js'
+        
+        'Ruby' :  
+          callback: => 
+             formatCode 'ruby'   
+             
+        'Python' :  
+          callback: => 
+             formatCode 'python'
+        
+      callback : =>
+          formatCode 'language-name-here'
         
       
     @controlView.addSubView @formatButtons

@@ -138,3 +138,7 @@ body.dragInAction .marKDown .md-help-view {
     // background-color : blue;
     // color : white;
 }
+
+.jcontextmenu {
+    z-index : 10002;
+}
