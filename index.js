@@ -1,4 +1,4 @@
-// Compiled by Koding Servers at Wed Apr 03 2013 20:08:51 GMT-0700 (PDT) in server time
+// Compiled by Koding Servers at Thu Apr 04 2013 17:56:13 GMT-0700 (PDT) in server time
 
 (function() {
 
@@ -300,13 +300,15 @@ Kodepad.Views.HelpView = (function(_super) {
 
 /* BLOCK STARTS /Source: /Users/arvidkahl/Applications/marKDown.kdapp/app/views.coffee */
 
-var Ace, AppCreator, HelpView, LiveViewer, Settings, _ref,
+var Ace, AppCreator, HelpView, LiveViewer, Settings, log, _ref,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
 Settings = Kodepad.Settings, Ace = Kodepad.Ace;
 
 _ref = Kodepad.Core, LiveViewer = _ref.LiveViewer, AppCreator = _ref.AppCreator, HelpView = _ref.HelpView;
+
+log = console.log;
 
 Kodepad.Views.Editor = (function() {
 
@@ -421,7 +423,7 @@ Kodepad.Views.MainView = (function(_super) {
     });
     this.exampleCode = new KDSelectBox({
       label: new KDLabelView({
-        title: 'Kode Examples: '
+        title: 'markdown Examples: '
       }),
       defaultValue: this.lastSelectedItem || "0",
       cssClass: 'control-button code-examples',
@@ -527,28 +529,30 @@ Kodepad.Views.MainView = (function(_super) {
       return ($(window)).resize();
     });
     this.utils.wait(50, function() {
-      return ($(window)).resize();
+      var _ref2;
+      ($(window)).resize();
+      return (_ref2 = _this.ace) != null ? _ref2.resize() : void 0;
     });
     return this.utils.wait(1000, function() {
-      console.log(_this.ace);
       return _this.ace.renderer.scrollBar.on('scroll', function() {
-        console.log('omg scroll');
         return _this.setPreviewScrollPercentage(_this.getEditScrollPercentage());
       });
     });
   };
 
   MainView.prototype.getEditScrollPercentage = function() {
-    var scrollHeight, scrollMaxheight, scrollPosition;
+    var scrollHeight, scrollMaxHeight, scrollPosition;
+    console.log(this.ace, this.aceView);
+    console.log(this.aceView.getHeight(), this.aceView.$()[0].clientHeight, this.aceView.$()[0].scrollHeight);
     scrollPosition = this.ace.renderer.scrollTop;
-    scrollHeight = this.aceView.$().height();
-    scrollMaxheight = this.aceView.getHeight();
-    console.log(this.aceView.getDomElement()[0].scrollHeight, scrollMaxheight);
-    return scrollPosition / scrollHeight * 100;
+    scrollHeight = this.aceView.getHeight();
+    scrollMaxHeight = this.ace.getSession().getDocument().getLength() * this.ace.renderer.lineHeight;
+    return scrollPosition / (scrollMaxHeight - scrollHeight) * 100;
   };
 
   MainView.prototype.setPreviewScrollPercentage = function(percentage) {
     var s;
+    console.log(percentage);
     s = this.liveViewer.mdPreview.$();
     return s.animate({
       scrollTop: (s[0].scrollHeight - s.height()) * percentage / 100

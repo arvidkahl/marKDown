@@ -1,6 +1,6 @@
 {Settings, Ace}   = Kodepad
 {LiveViewer, AppCreator, HelpView} = Kodepad.Core
-
+{log} = console
 class Kodepad.Views.Editor
   constructor: (options)->
     
@@ -97,7 +97,7 @@ class Kodepad.Views.MainView extends JView
       
     @exampleCode = new KDSelectBox
       label: new KDLabelView
-        title: 'Kode Examples: '
+        title: 'markdown Examples: '
         
       defaultValue: @lastSelectedItem or "0"
       cssClass: 'control-button code-examples'
@@ -391,29 +391,29 @@ class Kodepad.Views.MainView extends JView
     
     @liveViewer.previewCode do @editor.getValue
     @utils.defer => ($ window).resize()
-    @utils.wait 50, => ($ window).resize()
-        
+    @utils.wait 50, => 
+        ($ window).resize()
+        @ace?.resize()
     @utils.wait 1000, =>
-      console.log @ace
     
       @ace.renderer.scrollBar.on 'scroll', =>
-          console.log 'omg scroll'
           @setPreviewScrollPercentage @getEditScrollPercentage()
 
   getEditScrollPercentage:->
-      scrollPosition = @ace.renderer.scrollTop
-      scrollHeight = @aceView.$().height()
-      scrollMaxheight = @aceView.getHeight()
-      scrollPosition / (scrollHeight) * 100
+
+      scrollPosition    = @ace.renderer.scrollTop
+      scrollHeight      = @aceView.getHeight()
+      scrollMaxHeight   =  @ace.getSession().getDocument().getLength() *@ace.renderer.lineHeight
+
+      scrollPosition / (scrollMaxHeight- scrollHeight) * 100
 
   setPreviewScrollPercentage:(percentage)->
+  
     s = @liveViewer.mdPreview.$()
       
     s.animate
      scrollTop : ((s[0].scrollHeight - s.height())*percentage/100)
     , 50, "linear"
-    
-    
     
   
   pistachio: -> 
