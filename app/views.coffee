@@ -116,6 +116,8 @@ class Kodepad.Views.MainView extends JView
         if selection then @ace.getSession().getSelection().setSelectionRange selection.getRange()
         @liveViewer.previewCode do @editor.getValue
 
+      @splitView.on 'ResizeDidStop', =>
+        @ace?.resize()
       
       @splitView.on 'drop', (event)=>
         console.log arguments
@@ -152,7 +154,7 @@ class Kodepad.Views.MainView extends JView
     @controlButtons = new KDView
       cssClass    : 'header-buttons'
    
-    @controlButtons.addSubView new KDButtonGroupView
+    @controlButtons.addSubView @orientationButtons = new KDButtonGroupView
       cssClass : 'orientation-buttons fr'
       buttons : 
         'V5' :
@@ -160,7 +162,7 @@ class Kodepad.Views.MainView extends JView
           callback :=>
             addSplitView 'vertical', @ace.getSession().getValue(), @ace.getSession().getSelection(), '50%', '50%'
             @utils.wait 200, => @ace.resize()
-
+            
         'V3' :
           title:'v3'
           callback :=>

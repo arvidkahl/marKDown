@@ -1,4 +1,4 @@
-// Compiled by Koding Servers at Fri Apr 05 2013 15:44:21 GMT-0700 (PDT) in server time
+// Compiled by Koding Servers at Fri Apr 05 2013 15:58:59 GMT-0700 (PDT) in server time
 
 (function() {
 
@@ -462,6 +462,11 @@ Kodepad.Views.MainView = (function(_super) {
         }
         return _this.liveViewer.previewCode(_this.editor.getValue());
       });
+      _this.splitView.on('ResizeDidStop', function() {
+        var _ref2;
+
+        return (_ref2 = _this.ace) != null ? _ref2.resize() : void 0;
+      });
       return _this.splitView.on('drop', function(event) {
         var dataTransfer, file, files, text, types, uri, _i, _len, _ref2;
 
@@ -504,7 +509,7 @@ Kodepad.Views.MainView = (function(_super) {
     this.controlButtons = new KDView({
       cssClass: 'header-buttons'
     });
-    this.controlButtons.addSubView(new KDButtonGroupView({
+    this.controlButtons.addSubView(this.orientationButtons = new KDButtonGroupView({
       cssClass: 'orientation-buttons fr',
       buttons: {
         'V5': {
@@ -839,7 +844,7 @@ MainView = Kodepad.Views.MainView;
     width: window.innerWidth - 100,
     height: window.innerHeight - 100,
     overlay: false,
-    title: 'marKDown editor',
+    title: 'marKDown Editor',
     buttons: {
       Yes: {
         loader: {

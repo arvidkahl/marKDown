@@ -16,7 +16,7 @@ do ->
     width          : window.innerWidth-100
     height         : window.innerHeight-100
     overlay        : no
-    title          : 'marKDown editor'
+    title          : 'marKDown Editor'
     buttons        :
       Yes          :
         loader     :
