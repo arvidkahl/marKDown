@@ -128,6 +128,13 @@
   }
 .marKDown .md-help-view {
   background-color : #e8e8e8;
+  border : 2px solid #e8e8e8;
   padding : 20px;
   box-sizing:border-box;
+}
+
+body.dragInAction .marKDown .md-help-view {
+    border : 2px dashed blue;
+    background-color : blue;
+    color : white;
 }

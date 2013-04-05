@@ -92,6 +92,36 @@ class Kodepad.Views.MainView extends JView
       resizable : yes
       sizes     : ["50%", "50%"]
       views     : [@editorSplitView, @preview]
+      bind      : 'drop dragenter dragover dragleave'
+      
+    @splitView.on 'drop', (event)=>
+        console.log arguments
+        console.log 'item was dropped'
+        event.stopPropagation()
+        event.preventDefault()
+        dataTransfer = event?.originalEvent?.dataTransfer
+        
+        if dataTransfer
+          types = dataTransfer.types
+          console.log types
+          text = ""
+          
+          if "text/uri-list" in types
+            uri = dataTransfer.getData 'text/uri-list'
+            unless /\.(jpe?g|png|gif|ico)/.test uri
+              text += """[#{uri}](#{uri})"""
+            else text += """![#{uri}](#{uri})"""
+            
+            # now here is a hack  if I ever saw one
+            @utils.wait 50, => @ace.getSession().getUndoManager().undo()
+            
+          if "Files" in types and files = dataTransfer.files
+            console.log 'files exist, they will be uploaded here'
+            if files.length then for file in files
+              text += """![#{file.name}](#{file.name})"""
+          
+          # needs to be delayed so we can remove prior pastes
+          @utils.wait 100, => if text.length then @ace.session.insert(@ace.renderer.screenToTextCoordinates(event.originalEvent.clientX,event.originalEvent.clientY),text)
       
         
     @controlView = new KDView

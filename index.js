@@ -1,4 +1,4 @@
-// Compiled by Koding Servers at Thu Apr 04 2013 18:12:18 GMT-0700 (PDT) in server time
+// Compiled by Koding Servers at Thu Apr 04 2013 19:31:47 GMT-0700 (PDT) in server time
 
 (function() {
 
@@ -302,7 +302,8 @@ Kodepad.Views.HelpView = (function(_super) {
 
 var Ace, AppCreator, HelpView, LiveViewer, Settings, log, _ref,
   __hasProp = {}.hasOwnProperty,
-  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+  __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
 Settings = Kodepad.Settings, Ace = Kodepad.Ace;
 
@@ -417,7 +418,46 @@ Kodepad.Views.MainView = (function(_super) {
       type: "vertical",
       resizable: true,
       sizes: ["50%", "50%"],
-      views: [this.editorSplitView, this.preview]
+      views: [this.editorSplitView, this.preview],
+      bind: 'drop dragenter dragover dragleave'
+    });
+    this.splitView.on('drop', function(event) {
+      var dataTransfer, file, files, text, types, uri, _i, _len, _ref2;
+      console.log(arguments);
+      console.log('item was dropped');
+      event.stopPropagation();
+      event.preventDefault();
+      dataTransfer = event != null ? (_ref2 = event.originalEvent) != null ? _ref2.dataTransfer : void 0 : void 0;
+      if (dataTransfer) {
+        types = dataTransfer.types;
+        console.log(types);
+        text = "";
+        if (__indexOf.call(types, "text/uri-list") >= 0) {
+          uri = dataTransfer.getData('text/uri-list');
+          if (!/\.(jpe?g|png|gif|ico)/.test(uri)) {
+            text += "[" + uri + "](" + uri + ")";
+          } else {
+            text += "![" + uri + "](" + uri + ")";
+          }
+          _this.utils.wait(50, function() {
+            return _this.ace.getSession().getUndoManager().undo();
+          });
+        }
+        if (__indexOf.call(types, "Files") >= 0 && (files = dataTransfer.files)) {
+          console.log('files exist, they will be uploaded here');
+          if (files.length) {
+            for (_i = 0, _len = files.length; _i < _len; _i++) {
+              file = files[_i];
+              text += "![" + file.name + "](" + file.name + ")";
+            }
+          }
+        }
+        return _this.utils.wait(100, function() {
+          if (text.length) {
+            return _this.ace.session.insert(_this.ace.renderer.screenToTextCoordinates(event.originalEvent.clientX, event.originalEvent.clientY), text);
+          }
+        });
+      }
     });
     this.controlView = new KDView({
       cssClass: 'control-pane editor-header'
