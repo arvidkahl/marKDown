@@ -1,4 +1,4 @@
-// Compiled by Koding Servers at Thu Apr 04 2013 17:56:13 GMT-0700 (PDT) in server time
+// Compiled by Koding Servers at Thu Apr 04 2013 18:12:18 GMT-0700 (PDT) in server time
 
 (function() {
 
@@ -358,6 +358,7 @@ Kodepad.Views.MainView = (function(_super) {
     MainView.__super__.constructor.apply(this, arguments);
     this.liveViewer = LiveViewer.getSingleton();
     this.listenWindowResize();
+    this.autoScroll = true;
   }
 
   MainView.prototype.delegateElements = function() {
@@ -392,7 +393,7 @@ Kodepad.Views.MainView = (function(_super) {
     });
     overflowFix = function() {
       var height;
-      height = ($(".kdview.marKDown")).height() - 49;
+      height = ($(".kdview.marKDown")).height() - 39;
       return ($(".kodepad-editors")).height(height);
     };
     ($(window)).on("resize", overflowFix);
@@ -452,13 +453,21 @@ Kodepad.Views.MainView = (function(_super) {
     });
     this.controlButtons.addSubView(new KDMultipleChoice({
       cssClass: "clean-gray editor-button control-button auto-manual",
-      labels: ["Auto", "Manual"],
-      defaultValue: "Auto",
+      labels: ["Auto-Update", "Manual"],
+      defaultValue: "Auto-Update",
       callback: function(state) {
-        _this.liveViewer.active = state === "Auto" ? true : false;
-        if (state === "Auto") {
+        _this.liveViewer.active = state === "Auto-Update" ? true : false;
+        if (state === "Auto-Update") {
           return _this.liveViewer.previewCode(_this.editor.getValue());
         }
+      }
+    }));
+    this.controlButtons.addSubView(new KDMultipleChoice({
+      cssClass: "clean-gray editor-button control-button scroll-switch",
+      labels: ["Auto-Scroll", "Manual"],
+      defaultValue: "Auto-Scroll",
+      callback: function(state) {
+        return _this.autoScroll = state === "Auto-Scroll";
       }
     }));
     this.formatButtons = new KDView({
@@ -535,15 +544,15 @@ Kodepad.Views.MainView = (function(_super) {
     });
     return this.utils.wait(1000, function() {
       return _this.ace.renderer.scrollBar.on('scroll', function() {
-        return _this.setPreviewScrollPercentage(_this.getEditScrollPercentage());
+        if (_this.autoScroll === true) {
+          return _this.setPreviewScrollPercentage(_this.getEditScrollPercentage());
+        }
       });
     });
   };
 
   MainView.prototype.getEditScrollPercentage = function() {
     var scrollHeight, scrollMaxHeight, scrollPosition;
-    console.log(this.ace, this.aceView);
-    console.log(this.aceView.getHeight(), this.aceView.$()[0].clientHeight, this.aceView.$()[0].scrollHeight);
     scrollPosition = this.ace.renderer.scrollTop;
     scrollHeight = this.aceView.getHeight();
     scrollMaxHeight = this.ace.getSession().getDocument().getLength() * this.ace.renderer.lineHeight;
@@ -552,7 +561,6 @@ Kodepad.Views.MainView = (function(_super) {
 
   MainView.prototype.setPreviewScrollPercentage = function(percentage) {
     var s;
-    console.log(percentage);
     s = this.liveViewer.mdPreview.$();
     return s.animate({
       scrollTop: (s[0].scrollHeight - s.height()) * percentage / 100

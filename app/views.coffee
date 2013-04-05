@@ -30,6 +30,8 @@ class Kodepad.Views.MainView extends JView
     @liveViewer = LiveViewer.getSingleton()
     @listenWindowResize()
     
+    @autoScroll = yes
+    
   delegateElements:->
     
     @preview = new KDView
@@ -65,7 +67,7 @@ class Kodepad.Views.MainView extends JView
 
     # OVERFLOW FIX
     overflowFix = ->
-      height = ($ ".kdview.marKDown").height() - 49
+      height = ($ ".kdview.marKDown").height() - 39
       ($ ".kodepad-editors").height height
       #
     ($ window).on "resize", overflowFix
@@ -309,13 +311,20 @@ class Kodepad.Views.MainView extends JView
               
     @controlButtons.addSubView new KDMultipleChoice
       cssClass    : "clean-gray editor-button control-button auto-manual"
-      labels      : ["Auto", "Manual"]
-      defaultValue: "Auto"
+      labels      : ["Auto-Update", "Manual"]
+      defaultValue: "Auto-Update"
       callback    : (state)=>
-        @liveViewer.active = if state is "Auto" then yes else no
-        if state is "Auto"
+        @liveViewer.active = if state is "Auto-Update" then yes else no
+        if state is "Auto-Update"
           @liveViewer.previewCode do @editor.getValue
     
+    @controlButtons.addSubView new KDMultipleChoice
+      cssClass    : "clean-gray editor-button control-button scroll-switch"
+      labels      : ["Auto-Scroll", "Manual"]
+      defaultValue: "Auto-Scroll"
+      callback    : (state)=>
+        @autoScroll = state is "Auto-Scroll"
+            
     @formatButtons = new KDView
       cssClass    : 'header-format-buttons'
     
@@ -373,13 +382,6 @@ class Kodepad.Views.MainView extends JView
     italicButton.on 'mouseleave', =>
         @mdHelpView.setDefault()
         
-    #@formatButtons.addSubView new KDButtonView
-      #cssClass    : "clean-gray editor-button control-button underline"
-      #title       : "_"
-      #icon        : yes
-      #iconOnly    : yes
-      #iconClass   : "underline"
-      #callback: =>   console.log 'UNDERLINE!'
       
     @controlView.addSubView @formatButtons
     @controlView.addSubView @exampleCode.options.label
@@ -397,7 +399,8 @@ class Kodepad.Views.MainView extends JView
     @utils.wait 1000, =>
     
       @ace.renderer.scrollBar.on 'scroll', =>
-          @setPreviewScrollPercentage @getEditScrollPercentage()
+          if @autoScroll is yes
+            @setPreviewScrollPercentage @getEditScrollPercentage()
 
   getEditScrollPercentage:->
 
