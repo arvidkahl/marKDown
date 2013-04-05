@@ -59,7 +59,7 @@ class Kodepad.Views.MainView extends JView
     @editorSplitView = new KDSplitView
       type      : "horizontal"
       resizable : yes
-      sizes     : ["10%","90%"]
+      sizes     : ["0%","100%"]
       views     : [@mdHelpView,@aceWrapperView]
 
     
@@ -136,9 +136,8 @@ class Kodepad.Views.MainView extends JView
       cssClass: 'control-button code-examples'
       selectOptions: ({title: item.title, value: key} for item, key in Kodepad.Settings.exampleCodes)
       callback: =>
-        @lastSelectedItem = @exampleCode.getValue()
+        @lastSelectedItem = @exampleCode.getValue()        
         {markdown} = Kodepad.Settings.exampleCodes[@lastSelectedItem]
-        
         @ace.getSession().setValue markdown
     
     @controlButtons = new KDView
@@ -286,21 +285,22 @@ class Kodepad.Views.MainView extends JView
                         #modal.destroy()
                         #new KDNotificationView
                           #title : "Your application #{name} is ready! Have fun. :)"
-    
-    #@controlButtons.addSubView new KDButtonView
-      #cssClass    : 'clean-gray editor-button control-button full-preview'
-      #title       : ""
-      #icon        : yes
-      #iconOnly    : yes
-      #iconClass   : "preview"
-      #callback    : =>
-        #@splitView.state = !@splitView.state
-        #if @splitView.state
-          #@splitView.resizePanel()
-          #KD.utils.wait 500, =>
-            #@editor.getView().domElement.trigger "keyup"
-        #else
-          #($ window).trigger "resize"
+    #
+    @controlButtons.addSubView new KDButtonView
+      cssClass    : 'clean-gray editor-button control-button full-preview'
+      title       : ""
+      icon        : yes
+      iconOnly    : yes
+      iconClass   : "preview"
+      callback    : =>
+        @splitView.state = !@splitView.state
+        if @splitView.state
+          @splitView.resizePanel(0,1,0)
+          KD.utils.wait 500, =>
+            @editor.getView().domElement.trigger "keyup"
+        else
+          ($ window).trigger "resize"
+        #@splitView.getOptions().type
           
     #toggleTransparency = new KDToggleButton
       #style       : "kdwhitebtn"

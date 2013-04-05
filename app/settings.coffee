@@ -22,6 +22,10 @@ Kodepad.Settings.exampleCodes = []
 # Sample Example
 ###
 Kodepad.Settings.exampleCodes.push 
+  title : "Empty"
+  markdown : ""
+  
+Kodepad.Settings.exampleCodes.push 
   title: "Sample"
   markdown: 
     """
