@@ -85,7 +85,14 @@
   width: 411px;
 }
 
+.marKDown .control-pane .header-buttons .orientation-buttons{
+  margin-right:5px;
+}
+
 .marKDown .control-pane .header-buttons .orientation-buttons button{
+  margin-right:0px;
+}
+.marKDown .control-pane .header-format-buttons button{
   margin-right:0px;
 }
 .marKDown .control-pane .header-buttons .orientation-buttons button span.icon{
@@ -119,6 +126,7 @@
 .marKDown .control-pane .header-format-buttons {
   width: auto;
   float: left;
+  margin:5px;
 }
 
 .marKDown .control-pane .header-format-buttons .control-button {
@@ -147,6 +155,10 @@
 
 .marKDown .control-pane .control-button.code-examples {
   margin-top: -1px;
+}
+.marKDown .control-pane .code {
+  margin-top: 5px;
+  vertical-align:top;
 }
 
 .marKDown .control-pane .control-button.transp {

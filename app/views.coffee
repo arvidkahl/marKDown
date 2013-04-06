@@ -272,107 +272,97 @@ class Kodepad.Views.MainView extends JView
         title : 'When switched on, the Preview will scroll alongside the editor'
       callback    : (state)=>
         @autoScroll = state is "Scroll"
-            
-    @formatButtons = new KDView
-      cssClass    : 'header-format-buttons'
     
-    @formatButtons.addSubView boldButton = new KDButtonView
-      cssClass    : "clean-gray editor-button control-button bold"
-      title       : "B"
-      icon        : yes
-      iconOnly    : yes
-      tooltip     :
-        title     : 'Bold   **Text**'
-      bind        : 'mouseenter mouseleave'
-      callback: =>   
-        range = @ace.selection.getRange()
-        @ace.session.replace range, "**#{@ace.getCopyText()}**"
+    @formatButtons = new KDButtonGroupView
+      cssClass    : 'header-format-buttons'
+      buttons: 
+       'Bold'     :
+          cssClass    : "clean-gray bold"
+          title       : "B"
+          icon        : yes
+          iconOnly    : yes
+          tooltip     :
+            title     : 'Bold   **Text**'
+          bind        : 'mouseenter mouseleave'
+          callback: =>   
+            range = @ace.selection.getRange()
+            @ace.session.replace range, "**#{@ace.getCopyText()}**"
         
-        @ace.selection.setSelectionRange
-          start : 
-              column : range.start.column+2
-              row    : range.start.row
-          end   : 
-              column : range.end.column+2
-              row    : range.end.row  
+            @ace.selection.setSelectionRange
+              start : 
+                column : range.start.column+2
+                row    : range.start.row
+              end   : 
+                column : range.end.column+2
+                row    : range.end.row  
         
-        @ace.focus()
-    #
-    #boldButton.on 'mouseenter', =>
-        #@mdHelpView.emit 'bold'
-    #
-    #boldButton.on 'mouseleave', =>
-        #@mdHelpView.setDefault()
+            @ace.focus()
 
-    @formatButtons.addSubView italicButton = new KDButtonView
-      cssClass    : "clean-gray editor-button control-button italic"
-      title       : "I"
-      icon        : yes
-      iconOnly    : yes
-      tooltip     :
-        title     : 'Italic   *Text*'     
-      bind        : 'mouseenter mouseleave'
-      callback: =>   
-        range = @ace.selection.getRange()
-        
-        @ace.session.replace range, "*#{@ace.getCopyText()}*"
 
-        @ace.selection.setSelectionRange
-          start : 
-              column : range.start.column+1
-              row    : range.start.row
-          end   : 
-              column : range.end.column+1
-              row    : range.end.row
+        'Italic' :
+          cssClass    : "clean-gray italic"
+          title       : "I"
+          icon        : yes
+          iconOnly    : yes
+          tooltip     :
+            title     : 'Italic   *Text*'     
+          bind        : 'mouseenter mouseleave'
+          callback: =>   
+            range = @ace.selection.getRange()
+        
+            @ace.session.replace range, "*#{@ace.getCopyText()}*"
+
+            @ace.selection.setSelectionRange
+              start : 
+                column : range.start.column+1
+                row    : range.start.row
+              end   : 
+                column : range.end.column+1
+                row    : range.end.row
               
-        @ace.focus()        
-    #italicButton.on 'mouseenter', =>
-        #@mdHelpView.emit 'italic'
-    #
-    #italicButton.on 'mouseleave', =>
-        #@mdHelpView.setDefault()
+            @ace.focus()        
+
+        'Link' :
+          cssClass    : "clean-gray link"
+          title       : "Link"
+          icon        : yes
+          iconOnly    : yes
+          tooltip     :
+            title     : 'Link   [Title](URL "Optional Title")'     
+          bind        : 'mouseenter mouseleave'
+          callback: =>   
+            range = @ace.selection.getRange()
         
-    @formatButtons.addSubView linkButton = new KDButtonView
-      cssClass    : "clean-gray editor-button control-button link"
-      title       : "Link"
-      icon        : yes
-      iconOnly    : yes
-      tooltip     :
-        title     : 'Link   [Title](URL "Optional Title")'     
-      bind        : 'mouseenter mouseleave'
-      callback: =>   
-        range = @ace.selection.getRange()
-        
-        @ace.session.replace range, """[#{@ace.getCopyText() or 'Link Text'}](#{@ace.getCopyText() or 'Link_URL "Link Title"'})"""
-        @ace.focus()     
+            @ace.session.replace range, """[#{@ace.getCopyText() or 'Link Text'}](#{@ace.getCopyText() or 'Link_URL "Link Title"'})"""
+            @ace.focus()     
           
-    @formatButtons.addSubView imageButton = new KDButtonView
-      cssClass    : "clean-gray editor-button control-button image"
-      title       : "Image"
-      icon        : yes
-      iconOnly    : yes
-      tooltip     :
-        title     : 'Image    ![Alt Text](URL "Optional Title")'     
-      bind        : 'mouseenter mouseleave'
-      callback: =>   
-        range = @ace.selection.getRange()
+        'Image' :
+          cssClass    : "clean-gray image"
+          title       : "Image"
+          icon        : yes
+          iconOnly    : yes
+          tooltip     :
+            title     : 'Image    ![Alt Text](URL "Optional Title")'     
+          bind        : 'mouseenter mouseleave'
+          callback: =>   
+            range = @ace.selection.getRange()
         
-        @ace.session.replace range, """![#{@ace.getCopyText() or 'Alt Text'}](#{@ace.getCopyText() or 'Image_URL "Optional Title"'})"""
-        @ace.focus()     
+            @ace.session.replace range, """![#{@ace.getCopyText() or 'Alt Text'}](#{@ace.getCopyText() or 'Image_URL "Optional Title"'})"""
+            @ace.focus()     
               
-    @formatButtons.addSubView inlineButton = new KDButtonView
-      cssClass    : "clean-gray editor-button control-button inline"
-      title       : "Inline Code"
-      icon        : yes
-      iconOnly    : yes
-      tooltip     :
-        title     : 'Inline Code    `Code`'     
-      bind        : 'mouseenter mouseleave'
-      callback: =>   
-        range = @ace.selection.getRange()
+        'Inline' :
+          cssClass    : "clean-gray inline"
+          title       : "Inline Code"
+          icon        : yes
+          iconOnly    : yes
+          tooltip     :
+            title     : 'Inline Code    `Code`'     
+          bind        : 'mouseenter mouseleave'
+          callback: =>   
+            range = @ace.selection.getRange()
         
-        @ace.session.replace range, """`#{@ace.getCopyText() or 'Inline Code'}`"""
-        @ace.focus()     
+            @ace.session.replace range, """`#{@ace.getCopyText() or 'Inline Code'}`"""
+            @ace.focus()     
     
     formatCode = (syntax)=>
         range = @ace.selection.getRange()
@@ -380,8 +370,8 @@ class Kodepad.Views.MainView extends JView
         @ace.session.replace range, """```#{syntax}\n#{@ace.getCopyText() or 'Code Block'}\n```"""
         @ace.focus()     
 
-    @formatButtons.addSubView codeButton = new KDButtonViewWithMenu
-      cssClass    : "clean-gray editor-button control-button code"
+    codeButton = new KDButtonViewWithMenu
+      cssClass    : "clean-gray  code"
       title       : "Code Block"
       icon        : yes
       iconOnly    : yes
@@ -406,6 +396,8 @@ class Kodepad.Views.MainView extends JView
         
       
     @controlView.addSubView @formatButtons
+    @controlView.addSubView codeButton
+    
     @controlView.addSubView @exampleCode.options.label
     @controlView.addSubView @exampleCode
     @controlView.addSubView @controlButtons

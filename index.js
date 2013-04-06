@@ -1,4 +1,4 @@
-// Compiled by Koding Servers at Fri Apr 05 2013 19:13:24 GMT-0700 (PDT) in server time
+// Compiled by Koding Servers at Fri Apr 05 2013 19:39:12 GMT-0700 (PDT) in server time
 
 (function() {
 
@@ -379,7 +379,7 @@ Kodepad.Views.MainView = (function(_super) {
   }
 
   MainView.prototype.delegateElements = function() {
-    var addSplitView, boldButton, codeButton, formatCode, imageButton, inlineButton, italicButton, item, key, linkButton, overflowFix,
+    var addSplitView, codeButton, formatCode, item, key, overflowFix,
       _this = this;
 
     this.splitViewWrapper = new KDView;
@@ -660,114 +660,116 @@ Kodepad.Views.MainView = (function(_super) {
         return _this.autoScroll = state === "Scroll";
       }
     }));
-    this.formatButtons = new KDView({
-      cssClass: 'header-format-buttons'
+    this.formatButtons = new KDButtonGroupView({
+      cssClass: 'header-format-buttons',
+      buttons: {
+        'Bold': {
+          cssClass: "clean-gray bold",
+          title: "B",
+          icon: true,
+          iconOnly: true,
+          tooltip: {
+            title: 'Bold   **Text**'
+          },
+          bind: 'mouseenter mouseleave',
+          callback: function() {
+            var range;
+
+            range = _this.ace.selection.getRange();
+            _this.ace.session.replace(range, "**" + (_this.ace.getCopyText()) + "**");
+            _this.ace.selection.setSelectionRange({
+              start: {
+                column: range.start.column + 2,
+                row: range.start.row
+              },
+              end: {
+                column: range.end.column + 2,
+                row: range.end.row
+              }
+            });
+            return _this.ace.focus();
+          }
+        },
+        'Italic': {
+          cssClass: "clean-gray italic",
+          title: "I",
+          icon: true,
+          iconOnly: true,
+          tooltip: {
+            title: 'Italic   *Text*'
+          },
+          bind: 'mouseenter mouseleave',
+          callback: function() {
+            var range;
+
+            range = _this.ace.selection.getRange();
+            _this.ace.session.replace(range, "*" + (_this.ace.getCopyText()) + "*");
+            _this.ace.selection.setSelectionRange({
+              start: {
+                column: range.start.column + 1,
+                row: range.start.row
+              },
+              end: {
+                column: range.end.column + 1,
+                row: range.end.row
+              }
+            });
+            return _this.ace.focus();
+          }
+        },
+        'Link': {
+          cssClass: "clean-gray link",
+          title: "Link",
+          icon: true,
+          iconOnly: true,
+          tooltip: {
+            title: 'Link   [Title](URL "Optional Title")'
+          },
+          bind: 'mouseenter mouseleave',
+          callback: function() {
+            var range;
+
+            range = _this.ace.selection.getRange();
+            _this.ace.session.replace(range, "[" + (_this.ace.getCopyText() || 'Link Text') + "](" + (_this.ace.getCopyText() || 'Link_URL "Link Title"') + ")");
+            return _this.ace.focus();
+          }
+        },
+        'Image': {
+          cssClass: "clean-gray image",
+          title: "Image",
+          icon: true,
+          iconOnly: true,
+          tooltip: {
+            title: 'Image    ![Alt Text](URL "Optional Title")'
+          },
+          bind: 'mouseenter mouseleave',
+          callback: function() {
+            var range;
+
+            range = _this.ace.selection.getRange();
+            _this.ace.session.replace(range, "![" + (_this.ace.getCopyText() || 'Alt Text') + "](" + (_this.ace.getCopyText() || 'Image_URL "Optional Title"') + ")");
+            return _this.ace.focus();
+          }
+        },
+        'Inline': {
+          cssClass: "clean-gray inline",
+          title: "Inline Code",
+          icon: true,
+          iconOnly: true,
+          tooltip: {
+            title: 'Inline Code    `Code`'
+          },
+          bind: 'mouseenter mouseleave',
+          callback: function() {
+            var range;
+
+            range = _this.ace.selection.getRange();
+            _this.ace.session.replace(range, "`" + (_this.ace.getCopyText() || 'Inline Code') + "`");
+            return _this.ace.focus();
+          }
+        }
+      }
     });
-    this.formatButtons.addSubView(boldButton = new KDButtonView({
-      cssClass: "clean-gray editor-button control-button bold",
-      title: "B",
-      icon: true,
-      iconOnly: true,
-      tooltip: {
-        title: 'Bold   **Text**'
-      },
-      bind: 'mouseenter mouseleave',
-      callback: function() {
-        var range;
-
-        range = _this.ace.selection.getRange();
-        _this.ace.session.replace(range, "**" + (_this.ace.getCopyText()) + "**");
-        _this.ace.selection.setSelectionRange({
-          start: {
-            column: range.start.column + 2,
-            row: range.start.row
-          },
-          end: {
-            column: range.end.column + 2,
-            row: range.end.row
-          }
-        });
-        return _this.ace.focus();
-      }
-    }));
-    this.formatButtons.addSubView(italicButton = new KDButtonView({
-      cssClass: "clean-gray editor-button control-button italic",
-      title: "I",
-      icon: true,
-      iconOnly: true,
-      tooltip: {
-        title: 'Italic   *Text*'
-      },
-      bind: 'mouseenter mouseleave',
-      callback: function() {
-        var range;
-
-        range = _this.ace.selection.getRange();
-        _this.ace.session.replace(range, "*" + (_this.ace.getCopyText()) + "*");
-        _this.ace.selection.setSelectionRange({
-          start: {
-            column: range.start.column + 1,
-            row: range.start.row
-          },
-          end: {
-            column: range.end.column + 1,
-            row: range.end.row
-          }
-        });
-        return _this.ace.focus();
-      }
-    }));
-    this.formatButtons.addSubView(linkButton = new KDButtonView({
-      cssClass: "clean-gray editor-button control-button link",
-      title: "Link",
-      icon: true,
-      iconOnly: true,
-      tooltip: {
-        title: 'Link   [Title](URL "Optional Title")'
-      },
-      bind: 'mouseenter mouseleave',
-      callback: function() {
-        var range;
-
-        range = _this.ace.selection.getRange();
-        _this.ace.session.replace(range, "[" + (_this.ace.getCopyText() || 'Link Text') + "](" + (_this.ace.getCopyText() || 'Link_URL "Link Title"') + ")");
-        return _this.ace.focus();
-      }
-    }));
-    this.formatButtons.addSubView(imageButton = new KDButtonView({
-      cssClass: "clean-gray editor-button control-button image",
-      title: "Image",
-      icon: true,
-      iconOnly: true,
-      tooltip: {
-        title: 'Image    ![Alt Text](URL "Optional Title")'
-      },
-      bind: 'mouseenter mouseleave',
-      callback: function() {
-        var range;
-
-        range = _this.ace.selection.getRange();
-        _this.ace.session.replace(range, "![" + (_this.ace.getCopyText() || 'Alt Text') + "](" + (_this.ace.getCopyText() || 'Image_URL "Optional Title"') + ")");
-        return _this.ace.focus();
-      }
-    }));
-    this.formatButtons.addSubView(inlineButton = new KDButtonView({
-      cssClass: "clean-gray editor-button control-button inline",
-      title: "Inline Code",
-      icon: true,
-      iconOnly: true,
-      tooltip: {
-        title: 'Inline Code    `Code`'
-      },
-      bind: 'mouseenter mouseleave',
-      callback: function() {
-        var range;
-
-        range = _this.ace.selection.getRange();
-        _this.ace.session.replace(range, "`" + (_this.ace.getCopyText() || 'Inline Code') + "`");
-        return _this.ace.focus();
-      }
-    }));
     formatCode = function(syntax) {
       var range;
 
@@ -775,8 +777,8 @@ Kodepad.Views.MainView = (function(_super) {
       _this.ace.session.replace(range, "```" + syntax + "\n" + (_this.ace.getCopyText() || 'Code Block') + "\n```");
       return _this.ace.focus();
     };
-    this.formatButtons.addSubView(codeButton = new KDButtonViewWithMenu({
-      cssClass: "clean-gray editor-button control-button code",
+    codeButton = new KDButtonViewWithMenu({
+      cssClass: "clean-gray  code",
       title: "Code Block",
       icon: true,
       iconOnly: true,
@@ -806,8 +808,9 @@ Kodepad.Views.MainView = (function(_super) {
       callback: function() {
         return formatCode('language-name-here');
       }
-    }));
+    });
     this.controlView.addSubView(this.formatButtons);
+    this.controlView.addSubView(codeButton);
     this.controlView.addSubView(this.exampleCode.options.label);
     this.controlView.addSubView(this.exampleCode);
     this.controlView.addSubView(this.controlButtons);
