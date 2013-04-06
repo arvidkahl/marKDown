@@ -1,4 +1,4 @@
-// Compiled by Koding Servers at Fri Apr 05 2013 17:27:30 GMT-0700 (PDT) in server time
+// Compiled by Koding Servers at Fri Apr 05 2013 19:13:24 GMT-0700 (PDT) in server time
 
 (function() {
 
@@ -512,11 +512,44 @@ Kodepad.Views.MainView = (function(_super) {
     this.controlButtons.addSubView(this.orientationButtons = new KDButtonGroupView({
       cssClass: 'orientation-buttons fr',
       buttons: {
+        'FullEditor': {
+          title: 'full-editor',
+          cssClass: 'clean-gray  full-editor',
+          icon: true,
+          iconOnly: true,
+          tooltip: {
+            title: 'Full Editor'
+          },
+          callback: function() {
+            addSplitView('vertical', _this.ace.getSession().getValue(), _this.ace.getSession().getSelection(), '100%', '0%');
+            return _this.utils.wait(200, function() {
+              return _this.ace.resize();
+            });
+          }
+        },
+        'FullPreview': {
+          title: 'full-preview',
+          cssClass: 'clean-gray  full-preview',
+          icon: true,
+          iconOnly: true,
+          tooltip: {
+            title: 'Full Preview'
+          },
+          callback: function() {
+            addSplitView('vertical', _this.ace.getSession().getValue(), _this.ace.getSession().getSelection(), '0%', '100%');
+            return _this.utils.wait(200, function() {
+              return _this.ace.resize();
+            });
+          }
+        },
         'V5': {
           title: 'v5',
           cssClass: 'clean-gray  v5',
           icon: true,
           iconOnly: true,
+          tooltip: {
+            title: 'Split vertically'
+          },
           callback: function() {
             addSplitView('vertical', _this.ace.getSession().getValue(), _this.ace.getSession().getSelection(), '50%', '50%');
             return _this.utils.wait(200, function() {
@@ -529,6 +562,9 @@ Kodepad.Views.MainView = (function(_super) {
           cssClass: 'clean-gray  v3',
           icon: true,
           iconOnly: true,
+          tooltip: {
+            title: 'Split vertically, with a larger Preview'
+          },
           callback: function() {
             addSplitView('vertical', _this.ace.getSession().getValue(), _this.ace.getSession().getSelection(), '30%', '70%');
             return _this.utils.wait(200, function() {
@@ -541,6 +577,9 @@ Kodepad.Views.MainView = (function(_super) {
           cssClass: 'clean-gray  h5',
           icon: true,
           iconOnly: true,
+          tooltip: {
+            title: 'Split horizontally'
+          },
           callback: function() {
             addSplitView('horizontal', _this.ace.getSession().getValue(), _this.ace.getSession().getSelection(), '50%', '50%');
             return _this.utils.wait(200, function() {
@@ -553,6 +592,9 @@ Kodepad.Views.MainView = (function(_super) {
           cssClass: 'clean-gray  h3',
           icon: true,
           iconOnly: true,
+          tooltip: {
+            title: 'Split horizontally, with a larger Preview'
+          },
           callback: function() {
             addSplitView('horizontal', _this.ace.getSession().getValue(), _this.ace.getSession().getSelection(), '30%', '70%');
             return _this.utils.wait(200, function() {
@@ -597,6 +639,9 @@ Kodepad.Views.MainView = (function(_super) {
       cssClass: "clean-gray editor-button control-button auto-manual",
       labels: ["Update", "Manual"],
       defaultValue: "Update",
+      tooltip: {
+        title: 'When switched on, the Preview will update on every keypress'
+      },
       callback: function(state) {
         _this.liveViewer.active = state === "Update" ? true : false;
         if (state === "Update") {
@@ -608,6 +653,9 @@ Kodepad.Views.MainView = (function(_super) {
       cssClass: "clean-gray editor-button control-button scroll-switch",
       labels: ["Scroll", "Manual"],
       defaultValue: "Scroll",
+      tooltip: {
+        title: 'When switched on, the Preview will scroll alongside the editor'
+      },
       callback: function(state) {
         return _this.autoScroll = state === "Scroll";
       }
@@ -620,6 +668,9 @@ Kodepad.Views.MainView = (function(_super) {
       title: "B",
       icon: true,
       iconOnly: true,
+      tooltip: {
+        title: 'Bold   **Text**'
+      },
       bind: 'mouseenter mouseleave',
       callback: function() {
         var range;
@@ -639,17 +690,14 @@ Kodepad.Views.MainView = (function(_super) {
         return _this.ace.focus();
       }
     }));
-    boldButton.on('mouseenter', function() {
-      return _this.mdHelpView.emit('bold');
-    });
-    boldButton.on('mouseleave', function() {
-      return _this.mdHelpView.setDefault();
-    });
     this.formatButtons.addSubView(italicButton = new KDButtonView({
       cssClass: "clean-gray editor-button control-button italic",
       title: "I",
       icon: true,
       iconOnly: true,
+      tooltip: {
+        title: 'Italic   *Text*'
+      },
       bind: 'mouseenter mouseleave',
       callback: function() {
         var range;
@@ -669,17 +717,14 @@ Kodepad.Views.MainView = (function(_super) {
         return _this.ace.focus();
       }
     }));
-    italicButton.on('mouseenter', function() {
-      return _this.mdHelpView.emit('italic');
-    });
-    italicButton.on('mouseleave', function() {
-      return _this.mdHelpView.setDefault();
-    });
     this.formatButtons.addSubView(linkButton = new KDButtonView({
       cssClass: "clean-gray editor-button control-button link",
       title: "Link",
       icon: true,
       iconOnly: true,
+      tooltip: {
+        title: 'Link   [Title](URL "Optional Title")'
+      },
       bind: 'mouseenter mouseleave',
       callback: function() {
         var range;
@@ -694,6 +739,9 @@ Kodepad.Views.MainView = (function(_super) {
       title: "Image",
       icon: true,
       iconOnly: true,
+      tooltip: {
+        title: 'Image    ![Alt Text](URL "Optional Title")'
+      },
       bind: 'mouseenter mouseleave',
       callback: function() {
         var range;
@@ -706,6 +754,11 @@ Kodepad.Views.MainView = (function(_super) {
     this.formatButtons.addSubView(inlineButton = new KDButtonView({
       cssClass: "clean-gray editor-button control-button inline",
       title: "Inline Code",
+      icon: true,
+      iconOnly: true,
+      tooltip: {
+        title: 'Inline Code    `Code`'
+      },
       bind: 'mouseenter mouseleave',
       callback: function() {
         var range;
@@ -725,6 +778,11 @@ Kodepad.Views.MainView = (function(_super) {
     this.formatButtons.addSubView(codeButton = new KDButtonViewWithMenu({
       cssClass: "clean-gray editor-button control-button code",
       title: "Code Block",
+      icon: true,
+      iconOnly: true,
+      tooltip: {
+        title: 'Code Block    ```language-name   Code  ```'
+      },
       bind: 'mouseenter mouseleave',
       menu: function() {
         return {

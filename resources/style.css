@@ -41,23 +41,32 @@
   background-position: 0 -630px;
 }
 
+.marKDown .control-pane button .icon {
+  background-image:url(markdownIcons.png)!important;  
+}
+
 .marKDown .control-pane button.bold .icon {
-  background-image:url(markdownIcons.png);
   background-position: 0 -40px;
 }
 
 .marKDown .control-pane button.italic .icon {
-  background-image:url(markdownIcons.png);
   background-position: -20px -40px;
 }
+
 .marKDown .control-pane button.link .icon {
-  background-image:url(markdownIcons.png);
   background-position: 0px -60px;
 }
 
 .marKDown .control-pane button.image .icon {
-  background-image:url(markdownIcons.png);
   background-position: -20px -60px;
+}
+
+.marKDown .control-pane button.inline .icon {
+  background-position: 0px -80px;
+}
+
+.marKDown .control-pane button.code .icon {
+  background-position: -20px -80px;
 }
 
 .marKDown .control-pane .icon.underline {
@@ -97,6 +106,14 @@
 
 .marKDown .control-pane .header-buttons .orientation-buttons button.h3 span.icon{
   background-position:-20px -20px;
+}
+
+.marKDown .control-pane .header-buttons .orientation-buttons button.full-editor span.icon{
+  background-position:-40px -20px;
+}
+
+.marKDown .control-pane .header-buttons .orientation-buttons button.full-preview span.icon{
+  background-position:-40px 0px;
 }
 
 .marKDown .control-pane .header-format-buttons {

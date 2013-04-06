@@ -28,7 +28,7 @@
     "_type": "tab"
   },
   "icns": {
-    "128": "./resources/icon.128.new.png"
+    "128": "./resources/icon.128.md.png"
   },
   "screenshots": [
     "./resources/screenshots/kodepad1.png",

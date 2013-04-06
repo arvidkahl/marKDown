@@ -157,11 +157,35 @@ class Kodepad.Views.MainView extends JView
     @controlButtons.addSubView @orientationButtons = new KDButtonGroupView
       cssClass : 'orientation-buttons fr'
       buttons : 
+        'FullEditor' :
+          title : 'full-editor'
+          cssClass : 'clean-gray  full-editor'
+          icon : yes
+          iconOnly : yes
+          tooltip :
+            title : 'Full Editor'
+          callback :=>
+            addSplitView 'vertical', @ace.getSession().getValue(), @ace.getSession().getSelection(), '100%', '0%'
+            @utils.wait 200, => @ace.resize()
+                            
+        'FullPreview' :
+          title : 'full-preview'
+          cssClass : 'clean-gray  full-preview'
+          icon : yes
+          iconOnly : yes
+          tooltip :
+            title : 'Full Preview'
+          callback :=>
+            addSplitView 'vertical', @ace.getSession().getValue(), @ace.getSession().getSelection(), '0%', '100%'
+            @utils.wait 200, => @ace.resize()
+                    
         'V5' :
           title : 'v5'
           cssClass : 'clean-gray  v5'
           icon : yes
           iconOnly : yes
+          tooltip :
+            title : 'Split vertically'
           callback :=>
             addSplitView 'vertical', @ace.getSession().getValue(), @ace.getSession().getSelection(), '50%', '50%'
             @utils.wait 200, => @ace.resize()
@@ -171,6 +195,8 @@ class Kodepad.Views.MainView extends JView
           cssClass : 'clean-gray  v3'
           icon : yes
           iconOnly : yes
+          tooltip :
+            title : 'Split vertically, with a larger Preview'
           callback :=>
             addSplitView 'vertical', @ace.getSession().getValue(), @ace.getSession().getSelection(), '30%', '70%'
             @utils.wait 200, => @ace.resize()
@@ -180,6 +206,8 @@ class Kodepad.Views.MainView extends JView
           cssClass : 'clean-gray  h5'
           icon : yes
           iconOnly : yes
+          tooltip :
+            title : 'Split horizontally'
           callback :=>
             addSplitView 'horizontal', @ace.getSession().getValue(), @ace.getSession().getSelection(), '50%', '50%'   
             @utils.wait 200, => @ace.resize()
@@ -188,6 +216,8 @@ class Kodepad.Views.MainView extends JView
           cssClass : 'clean-gray  h3'
           icon : yes
           iconOnly : yes
+          tooltip :
+            title : 'Split horizontally, with a larger Preview'
           callback :=>
             addSplitView 'horizontal', @ace.getSession().getValue(), @ace.getSession().getSelection(), '30%', '70%'
             @utils.wait 200, => @ace.resize()
@@ -227,6 +257,8 @@ class Kodepad.Views.MainView extends JView
       cssClass    : "clean-gray editor-button control-button auto-manual"
       labels      : ["Update", "Manual"]
       defaultValue: "Update"
+      tooltip:
+        title : 'When switched on, the Preview will update on every keypress'
       callback    : (state)=>
         @liveViewer.active = if state is "Update" then yes else no
         if state is "Update"
@@ -236,6 +268,8 @@ class Kodepad.Views.MainView extends JView
       cssClass    : "clean-gray editor-button control-button scroll-switch"
       labels      : ["Scroll", "Manual"]
       defaultValue: "Scroll"
+      tooltip : 
+        title : 'When switched on, the Preview will scroll alongside the editor'
       callback    : (state)=>
         @autoScroll = state is "Scroll"
             
@@ -247,7 +281,8 @@ class Kodepad.Views.MainView extends JView
       title       : "B"
       icon        : yes
       iconOnly    : yes
-      #iconClass   : "bold"
+      tooltip     :
+        title     : 'Bold   **Text**'
       bind        : 'mouseenter mouseleave'
       callback: =>   
         range = @ace.selection.getRange()
@@ -262,19 +297,20 @@ class Kodepad.Views.MainView extends JView
               row    : range.end.row  
         
         @ace.focus()
-    
-    boldButton.on 'mouseenter', =>
-        @mdHelpView.emit 'bold'
-    
-    boldButton.on 'mouseleave', =>
-        @mdHelpView.setDefault()
+    #
+    #boldButton.on 'mouseenter', =>
+        #@mdHelpView.emit 'bold'
+    #
+    #boldButton.on 'mouseleave', =>
+        #@mdHelpView.setDefault()
 
     @formatButtons.addSubView italicButton = new KDButtonView
       cssClass    : "clean-gray editor-button control-button italic"
       title       : "I"
       icon        : yes
       iconOnly    : yes
-      #iconClass   : "italic"
+      tooltip     :
+        title     : 'Italic   *Text*'     
       bind        : 'mouseenter mouseleave'
       callback: =>   
         range = @ace.selection.getRange()
@@ -290,18 +326,19 @@ class Kodepad.Views.MainView extends JView
               row    : range.end.row
               
         @ace.focus()        
-    italicButton.on 'mouseenter', =>
-        @mdHelpView.emit 'italic'
-    
-    italicButton.on 'mouseleave', =>
-        @mdHelpView.setDefault()
+    #italicButton.on 'mouseenter', =>
+        #@mdHelpView.emit 'italic'
+    #
+    #italicButton.on 'mouseleave', =>
+        #@mdHelpView.setDefault()
         
     @formatButtons.addSubView linkButton = new KDButtonView
       cssClass    : "clean-gray editor-button control-button link"
       title       : "Link"
       icon        : yes
       iconOnly    : yes
-      #iconClass   : "italic"
+      tooltip     :
+        title     : 'Link   [Title](URL "Optional Title")'     
       bind        : 'mouseenter mouseleave'
       callback: =>   
         range = @ace.selection.getRange()
@@ -314,7 +351,8 @@ class Kodepad.Views.MainView extends JView
       title       : "Image"
       icon        : yes
       iconOnly    : yes
-      #iconClass   : "italic"
+      tooltip     :
+        title     : 'Image    ![Alt Text](URL "Optional Title")'     
       bind        : 'mouseenter mouseleave'
       callback: =>   
         range = @ace.selection.getRange()
@@ -325,9 +363,10 @@ class Kodepad.Views.MainView extends JView
     @formatButtons.addSubView inlineButton = new KDButtonView
       cssClass    : "clean-gray editor-button control-button inline"
       title       : "Inline Code"
-      #icon        : yes
-      #iconOnly    : yes
-      #iconClass   : "italic"
+      icon        : yes
+      iconOnly    : yes
+      tooltip     :
+        title     : 'Inline Code    `Code`'     
       bind        : 'mouseenter mouseleave'
       callback: =>   
         range = @ace.selection.getRange()
@@ -344,9 +383,10 @@ class Kodepad.Views.MainView extends JView
     @formatButtons.addSubView codeButton = new KDButtonViewWithMenu
       cssClass    : "clean-gray editor-button control-button code"
       title       : "Code Block"
-      #icon        : yes
-      #iconOnly    : yes
-      #iconClass   : "italic"
+      icon        : yes
+      iconOnly    : yes
+      tooltip     :
+        title     : 'Code Block    ```language-name   Code  ```'     
       bind        : 'mouseenter mouseleave'
       menu :=>
         'JavaScript' :  
