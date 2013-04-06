@@ -1,4 +1,4 @@
-// Compiled by Koding Servers at Fri Apr 05 2013 15:58:59 GMT-0700 (PDT) in server time
+// Compiled by Koding Servers at Fri Apr 05 2013 17:27:30 GMT-0700 (PDT) in server time
 
 (function() {
 
@@ -514,6 +514,9 @@ Kodepad.Views.MainView = (function(_super) {
       buttons: {
         'V5': {
           title: 'v5',
+          cssClass: 'clean-gray  v5',
+          icon: true,
+          iconOnly: true,
           callback: function() {
             addSplitView('vertical', _this.ace.getSession().getValue(), _this.ace.getSession().getSelection(), '50%', '50%');
             return _this.utils.wait(200, function() {
@@ -523,6 +526,9 @@ Kodepad.Views.MainView = (function(_super) {
         },
         'V3': {
           title: 'v3',
+          cssClass: 'clean-gray  v3',
+          icon: true,
+          iconOnly: true,
           callback: function() {
             addSplitView('vertical', _this.ace.getSession().getValue(), _this.ace.getSession().getSelection(), '30%', '70%');
             return _this.utils.wait(200, function() {
@@ -532,6 +538,9 @@ Kodepad.Views.MainView = (function(_super) {
         },
         'H5': {
           title: 'h5',
+          cssClass: 'clean-gray  h5',
+          icon: true,
+          iconOnly: true,
           callback: function() {
             addSplitView('horizontal', _this.ace.getSession().getValue(), _this.ace.getSession().getSelection(), '50%', '50%');
             return _this.utils.wait(200, function() {
@@ -541,6 +550,9 @@ Kodepad.Views.MainView = (function(_super) {
         },
         'H3': {
           title: 'h3',
+          cssClass: 'clean-gray  h3',
+          icon: true,
+          iconOnly: true,
           callback: function() {
             addSplitView('horizontal', _this.ace.getSession().getValue(), _this.ace.getSession().getSelection(), '30%', '70%');
             return _this.utils.wait(200, function() {
@@ -606,6 +618,8 @@ Kodepad.Views.MainView = (function(_super) {
     this.formatButtons.addSubView(boldButton = new KDButtonView({
       cssClass: "clean-gray editor-button control-button bold",
       title: "B",
+      icon: true,
+      iconOnly: true,
       bind: 'mouseenter mouseleave',
       callback: function() {
         var range;
@@ -634,6 +648,8 @@ Kodepad.Views.MainView = (function(_super) {
     this.formatButtons.addSubView(italicButton = new KDButtonView({
       cssClass: "clean-gray editor-button control-button italic",
       title: "I",
+      icon: true,
+      iconOnly: true,
       bind: 'mouseenter mouseleave',
       callback: function() {
         var range;
@@ -662,6 +678,8 @@ Kodepad.Views.MainView = (function(_super) {
     this.formatButtons.addSubView(linkButton = new KDButtonView({
       cssClass: "clean-gray editor-button control-button link",
       title: "Link",
+      icon: true,
+      iconOnly: true,
       bind: 'mouseenter mouseleave',
       callback: function() {
         var range;
@@ -674,6 +692,8 @@ Kodepad.Views.MainView = (function(_super) {
     this.formatButtons.addSubView(imageButton = new KDButtonView({
       cssClass: "clean-gray editor-button control-button image",
       title: "Image",
+      icon: true,
+      iconOnly: true,
       bind: 'mouseenter mouseleave',
       callback: function() {
         var range;

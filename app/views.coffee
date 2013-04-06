@@ -159,23 +159,35 @@ class Kodepad.Views.MainView extends JView
       buttons : 
         'V5' :
           title : 'v5'
+          cssClass : 'clean-gray  v5'
+          icon : yes
+          iconOnly : yes
           callback :=>
             addSplitView 'vertical', @ace.getSession().getValue(), @ace.getSession().getSelection(), '50%', '50%'
             @utils.wait 200, => @ace.resize()
             
         'V3' :
           title:'v3'
+          cssClass : 'clean-gray  v3'
+          icon : yes
+          iconOnly : yes
           callback :=>
             addSplitView 'vertical', @ace.getSession().getValue(), @ace.getSession().getSelection(), '30%', '70%'
             @utils.wait 200, => @ace.resize()
 
         'H5' :
           title : 'h5'
+          cssClass : 'clean-gray  h5'
+          icon : yes
+          iconOnly : yes
           callback :=>
             addSplitView 'horizontal', @ace.getSession().getValue(), @ace.getSession().getSelection(), '50%', '50%'   
             @utils.wait 200, => @ace.resize()
         'H3' :
           title : 'h3'
+          cssClass : 'clean-gray  h3'
+          icon : yes
+          iconOnly : yes
           callback :=>
             addSplitView 'horizontal', @ace.getSession().getValue(), @ace.getSession().getSelection(), '30%', '70%'
             @utils.wait 200, => @ace.resize()
@@ -233,8 +245,8 @@ class Kodepad.Views.MainView extends JView
     @formatButtons.addSubView boldButton = new KDButtonView
       cssClass    : "clean-gray editor-button control-button bold"
       title       : "B"
-      #icon        : yes
-      #iconOnly    : yes
+      icon        : yes
+      iconOnly    : yes
       #iconClass   : "bold"
       bind        : 'mouseenter mouseleave'
       callback: =>   
@@ -260,8 +272,8 @@ class Kodepad.Views.MainView extends JView
     @formatButtons.addSubView italicButton = new KDButtonView
       cssClass    : "clean-gray editor-button control-button italic"
       title       : "I"
-      #icon        : yes
-      #iconOnly    : yes
+      icon        : yes
+      iconOnly    : yes
       #iconClass   : "italic"
       bind        : 'mouseenter mouseleave'
       callback: =>   
@@ -287,8 +299,8 @@ class Kodepad.Views.MainView extends JView
     @formatButtons.addSubView linkButton = new KDButtonView
       cssClass    : "clean-gray editor-button control-button link"
       title       : "Link"
-      #icon        : yes
-      #iconOnly    : yes
+      icon        : yes
+      iconOnly    : yes
       #iconClass   : "italic"
       bind        : 'mouseenter mouseleave'
       callback: =>   
@@ -300,8 +312,8 @@ class Kodepad.Views.MainView extends JView
     @formatButtons.addSubView imageButton = new KDButtonView
       cssClass    : "clean-gray editor-button control-button image"
       title       : "Image"
-      #icon        : yes
-      #iconOnly    : yes
+      icon        : yes
+      iconOnly    : yes
       #iconClass   : "italic"
       bind        : 'mouseenter mouseleave'
       callback: =>   
