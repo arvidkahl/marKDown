@@ -1,4 +1,4 @@
-// Compiled by Koding Servers at Fri Apr 05 2013 19:39:12 GMT-0700 (PDT) in server time
+// Compiled by Koding Servers at Sun Apr 07 2013 14:45:42 GMT-0700 (PDT) in server time
 
 (function() {
 
@@ -663,6 +663,29 @@ Kodepad.Views.MainView = (function(_super) {
     this.formatButtons = new KDButtonGroupView({
       cssClass: 'header-format-buttons',
       buttons: {
+        'Headline': {
+          cssClass: "clean-gray headline",
+          title: "B",
+          icon: true,
+          iconOnly: true,
+          tooltip: {
+            title: 'Headline   # Text'
+          },
+          bind: 'mouseenter mouseleave',
+          callback: function() {
+            var Range, index, line, newRange, range, _i, _len, _ref2;
+
+            Range = require('ace/range').Range;
+            range = _this.ace.selection.getRange();
+            _ref2 = _this.ace.getSession().getLines(range.start.row, range.end.row);
+            for (index = _i = 0, _len = _ref2.length; _i < _len; index = ++_i) {
+              line = _ref2[index];
+              newRange = new Range(range.start.row + index, 0, range.start.row + index, _this.ace.getSession().getLine(range.start.row + index).length);
+              _this.ace.getSession().replace(newRange, "#" + line);
+            }
+            return _this.ace.focus();
+          }
+        },
         'Bold': {
           cssClass: "clean-gray bold",
           title: "B",
@@ -714,6 +737,35 @@ Kodepad.Views.MainView = (function(_super) {
                 row: range.end.row
               }
             });
+            return _this.ace.focus();
+          }
+        },
+        'List': {
+          cssClass: "clean-gray list",
+          title: "I",
+          icon: true,
+          iconOnly: true,
+          tooltip: {
+            title: 'List  - Text'
+          },
+          bind: 'mouseenter mouseleave',
+          callback: function() {
+            var Range, index, line, newRange, range, _i, _len, _ref2;
+
+            Range = require('ace/range').Range;
+            range = _this.ace.selection.getRange();
+            console.log(range);
+            _ref2 = _this.ace.getSession().getLines(range.start.row, range.end.row);
+            for (index = _i = 0, _len = _ref2.length; _i < _len; index = ++_i) {
+              line = _ref2[index];
+              newRange = new Range(range.start.row + index, 0, range.start.row + index, _this.ace.getSession().getLine(range.start.row + index).length);
+              if (/^\s*-/.test(line)) {
+                console.log("starts", newRange);
+                _this.ace.getSession().replace(newRange, "  " + line);
+              } else {
+                _this.ace.getSession().replace(newRange, "- " + line);
+              }
+            }
             return _this.ace.focus();
           }
         },

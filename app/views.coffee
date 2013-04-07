@@ -276,6 +276,28 @@ class Kodepad.Views.MainView extends JView
     @formatButtons = new KDButtonGroupView
       cssClass    : 'header-format-buttons'
       buttons: 
+       'Headline'     :
+          cssClass    : "clean-gray headline"
+          title       : "B"
+          icon        : yes
+          iconOnly    : yes
+          tooltip     :
+            title     : 'Headline   # Text'
+          bind        : 'mouseenter mouseleave'
+          callback: =>   
+
+            Range = require('ace/range').Range
+            range = @ace.selection.getRange()
+            
+            for line,index in @ace.getSession().getLines range.start.row, range.end.row
+
+              newRange = new Range range.start.row+index,0,range.start.row+index,@ace.getSession().getLine(range.start.row+index).length
+              
+              @ace.getSession().replace newRange, "##{line}"
+                      
+            @ace.focus()        
+
+
        'Bold'     :
           cssClass    : "clean-gray bold"
           title       : "B"
@@ -320,6 +342,31 @@ class Kodepad.Views.MainView extends JView
                 column : range.end.column+1
                 row    : range.end.row
               
+            @ace.focus()        
+        
+        'List' :
+          cssClass    : "clean-gray list"
+          title       : "I"
+          icon        : yes
+          iconOnly    : yes
+          tooltip     :
+            title     : 'List  - Text'     
+          bind        : 'mouseenter mouseleave'
+          callback: =>   
+  
+            Range = require('ace/range').Range
+            range = @ace.selection.getRange()
+            console.log range
+            for line,index in @ace.getSession().getLines range.start.row, range.end.row
+
+              newRange = new Range range.start.row+index,0,range.start.row+index,@ace.getSession().getLine(range.start.row+index).length
+              
+              if /^\s*-/.test line
+                console.log "starts",newRange
+                @ace.getSession().replace newRange, "  #{line}"  
+              else @ace.getSession().replace newRange, "- #{line}"
+              
+                      
             @ace.focus()        
 
         'Link' :
